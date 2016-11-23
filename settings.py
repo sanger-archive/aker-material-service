@@ -10,8 +10,6 @@ material_type_schema = {
   }
 }
 
-set_schema = {}
-
 material_schema = {
     'material_type': {
       'type': 'objectid',
@@ -58,18 +56,7 @@ material_schema = {
     },
     'parent': {
       'type': 'objectid'
-    },
-    'sets': {
-      'type': 'list',
-      'schema': {
-        'type': 'objectid',
-        'data_relation': {
-          'resource': 'sets',
-          'field': '_id',
-          'embeddable': True
-        }
-      },
-    },
+    }
 }
 
 material_types = {
@@ -82,12 +69,7 @@ materials = {
     'schema': material_schema
 }
 
-sets = {
-  'schema': set_schema
-}
-
 DOMAIN = {
   'materials': materials,
-  'material_types': material_types,
-  'sets': sets
+  'material_types': material_types
 }
