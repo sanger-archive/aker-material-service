@@ -14,7 +14,7 @@ var start = new Date();
 var batchDocuments = new Array();
 var index = 0;
 
-var materials_types = ['58209508c19205127005f298', '58209502c19205127005f297'];
+var materials_types = ['cb491d0c-97e9-4d88-a68e-61896e064278', 'a012d300-55d7-4762-a5ce-15b8bcfdc85e'];
 var genders = ['male', 'female', 'unknown'];
 
 while(index < documentNumber) {
@@ -22,6 +22,7 @@ while(index < documentNumber) {
     var value = Math.random();
 
     var document = {
+        _id: generateUUID(),
         material_type: {
             _id: chooseRandom(materials_types)
         },
@@ -54,4 +55,11 @@ print('Inserted ' + documentNumber + ' in ' + (new Date() - start)/1000.0 + 's')
 function chooseRandom(ary) {
     var index = Math.floor(Math.random() * ary.length);
     return ary[index];
+}
+
+function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+        return v.toString(16);
+    });
 }
