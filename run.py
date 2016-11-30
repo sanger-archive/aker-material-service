@@ -5,6 +5,7 @@ import uuid
 from uuid_encoder import UUIDEncoder
 from uuid_validator import UUIDValidator
 from eve import Eve
+from flask import request, jsonify, abort
 from flask_bootstrap import Bootstrap
 from eve_docs import eve_docs
 
@@ -18,6 +19,25 @@ def set_uuid(resource_name, items):
     item['_id'] = str(uuid.uuid4())
 
 app.on_insert += set_uuid
+
+# Very rudimentary validation method... just for development!
+@app.route('/materials/validate', methods=['POST'])
+def validate(**lookup):
+  if not 'materials' in request.json:
+    abort(422)
+
+  validation_set = set(request.json['materials'])
+  result_set = set()
+
+  for material in app.data.driver.db.materials.find({'_id': { '$in': request.json['materials'] } }, { '_id': 1}):
+    result_set.add(material['_id'])
+
+  difference = validation_set - result_set
+
+  if (len(difference) == 0):
+    return "ok"
+  else:
+    abort(400)
 
 if __name__ == '__main__':
   # enable logging to 'app.log' file
