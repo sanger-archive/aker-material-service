@@ -9,5 +9,5 @@ var samples = tableName.aggregate([{$project: { _id: 1}}, {$sample: {size: numbe
 var ids = samples.map(function(sample) { return sample._id.valueOf() });
 
 ids.forEach(function(id) {
-  print(id);
+  print("\"" + id + "\",");
 });

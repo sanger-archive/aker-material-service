@@ -33,11 +33,12 @@ def validate(**lookup):
     result_set.add(material['_id'])
 
   difference = validation_set - result_set
+  diff_len = len(difference)
 
-  if (len(difference) == 0):
+  if (diff_len == 0):
     return "ok"
   else:
-    abort(400)
+    return "not ok - " + str(diff_len) + " materials not found"
 
 if __name__ == '__main__':
   # enable logging to 'app.log' file
