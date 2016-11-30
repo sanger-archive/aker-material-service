@@ -4,6 +4,7 @@ ENVIRONMENT_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'env
 execfile(ENVIRONMENT_PATH)
 
 material_type_schema = {
+  '_id': {'type': 'uuid'},
   'name': {
     'type': 'string',
     'required': True
@@ -11,52 +12,55 @@ material_type_schema = {
 }
 
 material_schema = {
-    'material_type': {
-      'type': 'objectid',
+  '_id': {
+    'type': 'uuid'
+  },
+  'material_type': {
+    'type': 'uuid',
+    'data_relation': {
+      'resource': 'material_types',
+      'field': '_id',
+      'embeddable': True
+    }
+  },
+  'supplier_name': {
+    'type': 'string',
+  },
+  'donor_id': {
+    'type': 'string',
+  },
+  'gender': {
+    'type': 'string',
+    'allowed': ['male', 'female', 'unknown'],
+    'required': True
+  },
+  'common_name': {
+    'type': 'string',
+  },
+  'phenotype': {
+    'type': 'string',
+  },
+  'date_of_receipt': {
+    'type': 'datetime',
+  },
+  'meta': {
+    'type': 'dict',
+    'allow_unknown': True,
+  },
+  'ancestors': {
+    'type': 'list',
+    'schema': {
+      'type': 'uuid',
       'data_relation': {
-        'resource': 'material_types',
+        'resource': 'materials',
         'field': '_id',
         'embeddable': True
       }
     },
-    'supplier_name': {
-      'type': 'string',
-    },
-    'donor_id': {
-      'type': 'string',
-    },
-    'gender': {
-      'type': 'string',
-      'allowed': ['male', 'female', 'unknown'],
-      'required': True
-    },
-    'common_name': {
-      'type': 'string',
-    },
-    'phenotype': {
-      'type': 'string',
-    },
-    'date_of_receipt': {
-      'type': 'datetime',
-    },
-    'meta': {
-      'type': 'dict',
-      'allow_unknown': True,
-    },
-    'ancestors': {
-      'type': 'list',
-      'schema': {
-        'type': 'objectid',
-        'data_relation': {
-          'resource': 'materials',
-          'field': '_id',
-          'embeddable': True
-        }
-      },
-    },
-    'parent': {
-      'type': 'objectid'
-    }
+  },
+  'parent': {
+    'type': 'uuid'
+  }
 }
 
 material_types = {
@@ -64,9 +68,9 @@ material_types = {
 }
 
 materials = {
-    'cache_control': 'max-age=10,must-revalidate',
-    'cache_expires': 10,
-    'schema': material_schema
+  'cache_control': 'max-age=10,must-revalidate',
+  'cache_expires': 10,
+  'schema': material_schema
 }
 
 DOMAIN = {
