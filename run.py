@@ -1,13 +1,15 @@
 import os
 import logging
 import uuid
+import json
 
 from uuid_encoder import UUIDEncoder
 from uuid_validator import UUIDValidator
 from eve import Eve
-from flask import request, jsonify, abort
+from flask import request, jsonify, abort, Response
 from flask_bootstrap import Bootstrap
 from eve_docs import eve_docs
+from bson import json_util
 
 SETTINGS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'settings.py')
 app = Eve(settings=SETTINGS_PATH, json_encoder=UUIDEncoder, validator=UUIDValidator)
@@ -39,6 +41,25 @@ def validate(**lookup):
     return "ok"
   else:
     return "not ok - " + str(diff_len) + " materials not found"
+
+@app.route('/materials/bulk_get', methods=['POST'])
+def bulk_get(**lookup):
+  if not 'materials' in request.json:
+    abort(422)
+
+  materials = []
+
+  for material in app.data.driver.db.materials.find({'_id': { '$in': request.json['materials'] } }):
+    materials.append(material)
+
+  materials = json.dumps(materials, default=json_util.default)
+
+  resp = Response(response=materials,
+      status=200, \
+      mimetype="application/json")
+
+  return (resp)
+
 
 if __name__ == '__main__':
   # enable logging to 'app.log' file
