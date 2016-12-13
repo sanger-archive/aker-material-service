@@ -6,8 +6,8 @@ tableName = db[tableName];
 
 var samples = tableName.aggregate([{$project: { _id: 1}}, {$sample: {size: numberOfSamples}}]);
 
-var ids = samples.map(function(sample) { return sample._id.valueOf() });
-
-ids.forEach(function(id) {
-  print("\"" + id + "\",");
+var ids = samples.map(function(sample) {
+  return "\"" + sample._id.valueOf() + "\"";
 });
+
+print(ids.join(","));
