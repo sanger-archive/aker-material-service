@@ -8,7 +8,7 @@ from uuid_validator import UUIDValidator
 from eve import Eve
 from flask import request, jsonify, abort, Response
 from flask_bootstrap import Bootstrap
-from eve_docs import eve_docs
+from eve_swagger import swagger
 from bson import json_util
 
 SETTINGS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'db', 'development.py')
@@ -17,7 +17,7 @@ def create_app(settings):
   app = Eve(settings=settings, json_encoder=UUIDEncoder, validator=UUIDValidator)
 
   Bootstrap(app)
-  app.register_blueprint(eve_docs, url_prefix='/docs')
+  app.register_blueprint(swagger)
 
   def set_uuid(resource_name, items):
     for item in items:
