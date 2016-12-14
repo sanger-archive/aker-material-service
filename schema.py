@@ -14,6 +14,12 @@ IF_MATCH = False
 
 ITEM_URL = 'regex("[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}")'
 
+SWAGGER_INFO = {
+  'title': 'Materials Service',
+  'description': 'An RESTful web service for storing material data',
+  'version': 'v1'
+}
+
 material_schema = {
   '_id': {
     'type': 'uuid'
