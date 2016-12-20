@@ -2,11 +2,13 @@ import os
 import logging
 import uuid
 import json
+import copy
+import pdb
 
 from uuid_encoder import UUIDEncoder
 from uuid_validator import UUIDValidator
 from eve import Eve
-from flask import request, jsonify, abort, Response
+from flask import request, jsonify, abort, Response, current_app
 from flask_bootstrap import Bootstrap
 from eve_docs import eve_docs
 from bson import json_util
@@ -44,6 +46,30 @@ def create_app(settings):
       return "ok"
     else:
       return "not ok - " + str(diff_len) + " materials not found"
+
+  def cerberus_to_json_schema(schema_obj):
+    schema_obj_copy = copy.deepcopy(schema_obj)
+    filter_list = ['meta', '_id', 'parent','ancestors']
+
+    for key in schema_obj_copy:
+      if schema_obj_copy[key]['type']=='datetime':
+        schema_obj_copy[key]['type'] = 'string'
+        schema_obj_copy[key]['format'] = 'date'
+
+    for key in filter_list:
+      if schema_obj_copy[key]:
+        del schema_obj_copy[key]
+
+    return schema_obj_copy
+
+  @app.route('/materials/schema', methods=['GET'])
+  def bulk_schema(**lookup):
+    schema_obj = cerberus_to_json_schema(current_app.config['DOMAIN']['materials']['schema'])
+
+    schema_str = json.dumps(schema_obj, default=json_util.default)
+
+    resp = Response(response=schema_str, status=200, mimetype="application/json")
+    return (resp)
 
   @app.route('/materials/bulk_get', methods=['POST'])
   def bulk_get(**lookup):
