@@ -5,8 +5,9 @@ Eve-Swagger==0.0.6
 Events==0.2.1
 Flask==0.10.1
 Flask-Bootstrap==3.3.7.0
--e git+https://github.com/jbeast/flask-pymongo@master#egg=Flask-PyMongo
+-e git+https://github.com/jbeast/flask-pymongo@14a96773349af2a544747ff97ee247a9e22a5360#egg=Flask_PyMongo
 Flask-Zipkin==0.0.2
+gunicorn==19.6.0
 itsdangerous==0.24
 Jinja2==2.8
 MarkupSafe==0.23
