@@ -13,7 +13,9 @@ from flask_bootstrap import Bootstrap
 from eve_swagger import swagger
 from bson import json_util
 
-SETTINGS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'db', 'development.py')
+environment = os.getenv('EVE_ENV', 'development')
+
+SETTINGS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'db', environment + '.py')
 
 def create_app(settings):
   app = Eve(settings=settings, json_encoder=UUIDEncoder, validator=UUIDValidator)
@@ -91,26 +93,25 @@ def create_app(settings):
 
   return app
 
+# enable logging to 'app.log' file
+handler = logging.FileHandler('app.log')
+
+# set a custom log format, and add request
+# metadata to each log line
+handler.setFormatter(logging.Formatter(
+    '%(asctime)s %(levelname)s: %(message)s '
+    '[in %(filename)s:%(lineno)d] -- ip: %(clientip)s, '
+    'url: %(url)s, method:%(method)s'))
+
+app = create_app(SETTINGS_PATH)
+
+# the default log level is set to WARNING, so
+# we have to explictly set the logging level
+# to INFO to get our custom message logged.
+app.logger.setLevel(logging.INFO)
+
+# append the handler to the default application logger
+app.logger.addHandler(handler)
 
 if __name__ == '__main__':
-  # enable logging to 'app.log' file
-  handler = logging.FileHandler('app.log')
-
-  # set a custom log format, and add request
-  # metadata to each log line
-  handler.setFormatter(logging.Formatter(
-      '%(asctime)s %(levelname)s: %(message)s '
-      '[in %(filename)s:%(lineno)d] -- ip: %(clientip)s, '
-      'url: %(url)s, method:%(method)s'))
-
-  app = create_app(SETTINGS_PATH)
-
-  # the default log level is set to WARNING, so
-  # we have to explictly set the logging level
-  # to INFO to get our custom message logged.
-  app.logger.setLevel(logging.INFO)
-
-  # append the handler to the default application logger
-  app.logger.addHandler(handler)
-
   app.run()
