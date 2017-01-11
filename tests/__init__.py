@@ -4,10 +4,6 @@ from flask_pymongo import MongoClient
 from eve.tests import TestMinimal
 from run import create_app
 
-MONGO_HOST = 'localhost'
-MONGO_PORT = 27017
-MONGO_DBNAME = 'materials_test'
-
 SETTINGS_PATH = os.path.join(os.path.dirname('..'), 'db', 'test.py')
 
 class MaterialsTestBase(TestMinimal):
