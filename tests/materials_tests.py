@@ -2,6 +2,8 @@ import utils
 
 from tests import MaterialsTestBase
 
+# Using the same test framework that Eve itself uses:
+# https://github.com/nicolaiarocci/eve/blob/develop/eve/tests/__init__.py
 class TestMaterials(MaterialsTestBase):
 
   def test_material_creation(self):

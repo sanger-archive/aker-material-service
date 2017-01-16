@@ -1,8 +1,14 @@
 import os
+import sys
 
+from flask import current_app
 from flask_pymongo import MongoClient
 from eve.tests import TestMinimal
 from run import create_app
+
+sys.path.insert(0, os.path.abspath('../db'))
+
+from db.test import MONGO_HOST, MONGO_PORT, MONGO_DBNAME
 
 SETTINGS_PATH = os.path.join(os.path.dirname('..'), 'db', 'test.py')
 
@@ -28,8 +34,8 @@ class MaterialsTestBase(TestMinimal):
 
   def setupDB(self):
     self.connection = MongoClient(MONGO_HOST, MONGO_PORT)
-    self.connection.drop_database(MONGO_DBNAME)
 
-  def dropDB(self):
-    self.connection = MongoClient(MONGO_HOST, MONGO_PORT)
-    self.connection.drop_database(MONGO_DBNAME)
+  def tearDown(self):
+    with self.app.app_context():
+      current_app.data.driver.db.materials.remove({})
+    del self.app
