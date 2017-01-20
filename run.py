@@ -111,11 +111,10 @@ app = create_app(SETTINGS_PATH)
 # to INFO to get our custom message logged.
 app.logger.setLevel(logging.INFO)
 
-
-  # the default log level is set to WARNING, so
-  # we have to explictly set the logging level
-  # to INFO to get our custom message logged.
-  app.logger.setLevel(logging.INFO)
+# the default log level is set to WARNING, so
+# we have to explictly set the logging level
+# to INFO to get our custom message logged.
+app.logger.setLevel(logging.INFO)
 
 zipkin = Zipkin(sample_rate=1)
 zipkin.init_app(app)
