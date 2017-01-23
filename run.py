@@ -12,6 +12,7 @@ from flask import request, jsonify, abort, Response, current_app
 from flask_bootstrap import Bootstrap
 from eve_swagger import swagger
 from bson import json_util
+from flask_zipkin import Zipkin
 
 environment = os.getenv('EVE_ENV', 'development')
 
@@ -110,8 +111,13 @@ app = create_app(SETTINGS_PATH)
 # to INFO to get our custom message logged.
 app.logger.setLevel(logging.INFO)
 
-# append the handler to the default application logger
-app.logger.addHandler(handler)
+# the default log level is set to WARNING, so
+# we have to explictly set the logging level
+# to INFO to get our custom message logged.
+app.logger.setLevel(logging.INFO)
+
+zipkin = Zipkin(sample_rate=1)
+zipkin.init_app(app)
 
 if __name__ == '__main__':
   app.run()
