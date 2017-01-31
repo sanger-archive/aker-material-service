@@ -50,20 +50,45 @@ def create_app(settings):
     else:
       return "not ok - " + str(diff_len) + " materials not found"
 
-  def cerberus_to_json_schema(schema_obj):
-    schema_obj_copy = copy.deepcopy(schema_obj)
-    filter_list = ['meta', '_id', 'parent','ancestors']
+  def cerberus_to_json_add_required_to_obj(out_obj):
+    schema_obj_copy = out_obj['properties']
+    required_list = []
+    for key in schema_obj_copy:
+      if (('required' in schema_obj_copy[key]) and (schema_obj_copy[key]['required'])):
+        required_list += [key]
+    if len(required_list) > 0:
+      out_obj['required'] = required_list
 
+  def cerberus_to_json_change_type_for_datetime(out_obj):
+    schema_obj_copy = out_obj['properties']
     for key in schema_obj_copy:
       if schema_obj_copy[key]['type']=='datetime':
         schema_obj_copy[key]['type'] = 'string'
         schema_obj_copy[key]['format'] = 'date'
 
+  def cerberus_to_json_filter_parameters(out_obj, filter_list):
+    schema_obj_copy = out_obj['properties']
     for key in filter_list:
       if schema_obj_copy[key]:
         del schema_obj_copy[key]
 
-    return schema_obj_copy
+  def cerberus_to_json_change_allowed_with_one_of(out_obj):
+    schema_obj_copy = out_obj['properties']
+    for key in schema_obj_copy:
+      if 'allowed' in schema_obj_copy[key]:
+        schema_obj_copy[key]['enum'] = schema_obj_copy[key]['allowed']
+        del schema_obj_copy[key]['allowed']
+
+  def cerberus_to_json_schema(schema_obj):
+    filter_list = ['meta', '_id', 'parent','ancestors']
+    out_obj = {'type': 'object', 'properties': copy.deepcopy(schema_obj)}
+
+    cerberus_to_json_change_type_for_datetime(out_obj)
+    cerberus_to_json_filter_parameters(out_obj, filter_list)
+    cerberus_to_json_add_required_to_obj(out_obj)
+    cerberus_to_json_change_allowed_with_one_of(out_obj)
+
+    return out_obj
 
   @app.route('/materials/schema', methods=['GET'])
   def bulk_schema(**lookup):

@@ -43,7 +43,8 @@ material_schema = {
   },
   'common_name': {
     'type': 'string',
-    'required': True
+    'required': True,
+    'allowed': ['Homo Sapiens', 'Mouse']
   },
   'phenotype': {
     'type': 'string',
