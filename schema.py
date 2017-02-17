@@ -80,18 +80,27 @@ container_schema = {
   'x_size': {
     'type': 'integer',
     'min': 1,
-    'max': 9999
+    'max': 9999,
+    'required': True
   },
   'y_size': {
     'type': 'integer',
     'min': 1,
-    'max': 9999
+    'max': 9999,
+    'required': True
   },
   'x_is_alpha': {
-    'type': 'boolean'
+    'type': 'boolean',
+    'required': True
   },
   'y_is_alpha': {
-    'type': 'boolean'
+    'type': 'boolean',
+    'required': True
+  },
+  'barcode': {
+    'type': 'string',
+    'unique': True,
+    'minlength': 7,
   }
 }
 

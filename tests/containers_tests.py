@@ -63,6 +63,73 @@ class TestContainers(ServiceTestBase):
     self.assertValidationErrorStatus(status)
     self.assertValidationError(response, { 'y_is_alpha': 'must be of boolean type' })
 
+  def test_x_size_required_container_creation(self):
+    data = self.valid_creation_resource()
+    del data['x_size']
+    response, status = self.post('/containers', data=data)
+
+    self.assertValidationErrorStatus(status)
+    self.assertValidationError(response, { 'x_size': 'required field' })
+
+  def test_y_size_required_container_creation(self):
+    data = self.valid_creation_resource()
+    del data['y_size']
+
+    response, status = self.post('/containers', data=data)
+
+    self.assertValidationErrorStatus(status)
+    self.assertValidationError(response, { 'y_size': 'required field' })
+
+  def test_x_is_alpha_required_container_creation(self):
+    data = self.valid_creation_resource()
+    del data['x_is_alpha']
+
+    response, status = self.post('/containers', data=data)
+
+    self.assertValidationErrorStatus(status)
+    self.assertValidationError(response, { 'x_is_alpha': 'required field' })
+
+  def test_y_is_alpha_required_container_creation(self):
+    data = self.valid_creation_resource()
+    del data['y_is_alpha']
+
+    response, status = self.post('/containers', data=data)
+
+    self.assertValidationErrorStatus(status)
+    self.assertValidationError(response, { 'y_is_alpha': 'required field'})
+
+  def test_barcode_is_created_when_not_provided(self):
+    data = self.valid_creation_resource()
+
+    response, status = self.post('/containers', data=data)
+
+    self.assert201(status)
+    self.assertTrue(len(response['barcode']))
+
+  def test_barcode_is_saved_when_provided(self):
+    data = utils.merge_dict(self.valid_creation_resource(), { 'barcode': 'xxxxxxx' })
+
+    response, status = self.post('/containers', data=data)
+
+    self.assert201(status)
+    self.assertEqual(response['barcode'], 'xxxxxxx')
+
+  def test_barcode_is_unique(self):
+    data = utils.merge_dict(self.valid_creation_resource(), { 'barcode': 'xxxxxxx' })
+    self.post('/containers', data=data)
+    response, status = self.post('/containers', data=data)
+
+    self.assertValidationErrorStatus(status)
+    self.assertValidationError(response, { 'barcode': "value 'xxxxxxx' is not unique"})
+
+
+  def test_barcode_has_min_length(self):
+    data = utils.merge_dict(self.valid_creation_resource(), { 'barcode': 'xxx' })
+    response, status = self.post('/containers', data=data)
+    print response
+    self.assertValidationErrorStatus(status)
+    self.assertValidationError(response, { 'barcode': 'min length is 7'})
+
   def valid_creation_resource(self):
     return {
       'x_size': 12,

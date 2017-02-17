@@ -30,6 +30,13 @@ def create_app(settings):
 
   app.on_insert += set_uuid
 
+  def set_barcode_if_not_present(containers):
+    for container in containers:
+      if 'barcode' not in container:
+        container['barcode'] = 'AKER-' + str(uuid.uuid4())[:8]
+
+  app.on_insert_containers += set_barcode_if_not_present
+
   # Very rudimentary validation method... just for development!
   @app.route('/materials/validate', methods=['POST'])
   def validate(**lookup):
@@ -135,11 +142,7 @@ app = create_app(SETTINGS_PATH)
 # we have to explictly set the logging level
 # to INFO to get our custom message logged.
 app.logger.setLevel(logging.INFO)
-
-# the default log level is set to WARNING, so
-# we have to explictly set the logging level
-# to INFO to get our custom message logged.
-app.logger.setLevel(logging.INFO)
+app.logger.addHandler(handler)
 
 zipkin = Zipkin(sample_rate=1)
 zipkin.init_app(app)
