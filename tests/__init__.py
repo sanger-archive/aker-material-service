@@ -12,7 +12,7 @@ from db.test import MONGO_HOST, MONGO_PORT, MONGO_DBNAME
 
 SETTINGS_PATH = os.path.join(os.path.dirname('..'), 'db', 'test.py')
 
-class MaterialsTestBase(TestMinimal):
+class ServiceTestBase(TestMinimal):
 
   def setUp(self, settings_file=None, url_converters=None):
 
@@ -38,4 +38,5 @@ class MaterialsTestBase(TestMinimal):
   def tearDown(self):
     with self.app.app_context():
       current_app.data.driver.db.materials.remove({})
+      current_app.data.driver.db.containers.remove({})
     del self.app

@@ -6,7 +6,7 @@ import copy
 import pdb
 
 from uuid_encoder import UUIDEncoder
-from uuid_validator import UUIDValidator
+from custom_validator import CustomValidator
 from eve import Eve
 from flask import request, jsonify, abort, Response, current_app
 from flask_bootstrap import Bootstrap
@@ -19,7 +19,7 @@ environment = os.getenv('EVE_ENV', 'development')
 SETTINGS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'db', environment + '.py')
 
 def create_app(settings):
-  app = Eve(settings=settings, json_encoder=UUIDEncoder, validator=UUIDValidator)
+  app = Eve(settings=settings, json_encoder=UUIDEncoder, validator=CustomValidator)
 
   Bootstrap(app)
   app.register_blueprint(swagger)

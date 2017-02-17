@@ -1,10 +1,10 @@
 import utils
 
-from tests import MaterialsTestBase
+from tests import ServiceTestBase
 
 # Using the same test framework that Eve itself uses:
 # https://github.com/nicolaiarocci/eve/blob/develop/eve/tests/__init__.py
-class TestMaterials(MaterialsTestBase):
+class TestMaterials(ServiceTestBase):
 
   def test_material_creation(self):
     r, status = self.post(self.domain['materials']['url'], self.valid_creation_resource())

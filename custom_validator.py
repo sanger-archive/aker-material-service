@@ -1,7 +1,7 @@
 from eve.io.mongo import Validator
 from uuid import UUID
 
-class UUIDValidator(Validator):
+class CustomValidator(Validator):
     """
     Extends the base mongo validator adding support for the uuid data-type
     """

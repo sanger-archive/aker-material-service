@@ -73,8 +73,33 @@ material_schema = {
   }
 }
 
+container_schema = {
+  '_id': {
+    'type': 'uuid'
+  },
+  'x_size': {
+    'type': 'integer',
+    'min': 1,
+    'max': 9999
+  },
+  'y_size': {
+    'type': 'integer',
+    'min': 1,
+    'max': 9999
+  },
+  'x_is_alpha': {
+    'type': 'boolean'
+  },
+  'y_is_alpha': {
+    'type': 'boolean'
+  }
+}
+
 DOMAIN = {
   'materials': {
     'schema': material_schema
+  },
+  'containers': {
+    'schema': container_schema
   }
 }
