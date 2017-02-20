@@ -40,3 +40,13 @@ class ServiceTestBase(TestMinimal):
       current_app.data.driver.db.materials.remove({})
       current_app.data.driver.db.containers.remove({})
     del self.app
+
+def valid_material_params():
+  return {
+    "material_type": "blood",
+    "supplier_name": "my supplier name 1",
+    "donor_id": "my donor id 1",
+    "gender": "female",
+    "common_name": "Homo Sapiens",
+    "phenotype": "eye colour"
+  }

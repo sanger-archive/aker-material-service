@@ -77,23 +77,25 @@ container_schema = {
   '_id': {
     'type': 'uuid'
   },
-  'x_size': {
+  'num_of_rows': {
     'type': 'integer',
     'min': 1,
     'max': 9999,
-    'required': True
+    'required': True,
+    'row_alpha_range': True
   },
-  'y_size': {
+  'num_of_cols': {
     'type': 'integer',
     'min': 1,
     'max': 9999,
-    'required': True
+    'required': True,
+    'col_alpha_range': True
   },
-  'x_is_alpha': {
+  'row_is_alpha': {
     'type': 'boolean',
     'required': True
   },
-  'y_is_alpha': {
+  'col_is_alpha': {
     'type': 'boolean',
     'required': True
   },
@@ -101,6 +103,25 @@ container_schema = {
     'type': 'string',
     'unique': True,
     'minlength': 7,
+    'non_aker_barcode': True,
+  },
+  'slots': {
+    'type': 'list',
+    'uniqueaddresses': True,
+    'schema': {
+      'type': 'dict',
+      'schema': {
+        'address': { 'type': 'string', 'address': True },
+        'material': {
+          'type': 'uuid',
+          'data_relation': {
+            'resource': 'materials',
+            'field': '_id',
+            'embeddable': True
+          }
+        }
+      }
+    }
   }
 }
 

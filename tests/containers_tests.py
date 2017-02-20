@@ -1,6 +1,6 @@
 import utils
 
-from tests import ServiceTestBase
+from tests import ServiceTestBase, valid_material_params
 
 class TestContainers(ServiceTestBase):
 
@@ -15,99 +15,114 @@ class TestContainers(ServiceTestBase):
     self.assertEqual(len(links), 2)
     self.assertHomeLink(links)
 
-  def test_x_size_min_container_creation(self):
-    data = utils.merge_dict(self.valid_creation_resource(), { 'x_size': 0 })
+  def test_num_of_rows_min_container_creation(self):
+    data = valid_container_params({ 'num_of_rows': 0 })
 
     response, status = self.post('/containers', data=data)
 
     self.assertValidationErrorStatus(status)
-    self.assertValidationError(response, { 'x_size': 'min value is 1' })
+    self.assertValidationError(response, { 'num_of_rows': 'min value is 1' })
 
-  def test_y_size_min_container_creation(self):
-    data = utils.merge_dict(self.valid_creation_resource(), { 'y_size': 0 })
-
-    response, status = self.post('/containers', data=data)
-
-    self.assertValidationErrorStatus(status)
-    self.assertValidationError(response, { 'y_size': 'min value is 1' })
-
-  def test_x_size_max_container_creation(self):
-    data = utils.merge_dict(self.valid_creation_resource(), { 'x_size': 10000 })
+  def test_num_of_cols_min_container_creation(self):
+    data = valid_container_params({ 'num_of_cols': 0 })
 
     response, status = self.post('/containers', data=data)
 
     self.assertValidationErrorStatus(status)
-    self.assertValidationError(response, { 'x_size': 'max value is 9999' })
+    self.assertValidationError(response, { 'num_of_cols': 'min value is 1' })
 
-  def test_y_size_max_container_creation(self):
-    data = utils.merge_dict(self.valid_creation_resource(), { 'y_size': 10000 })
-
-    response, status = self.post('/containers', data=data)
-
-    self.assertValidationErrorStatus(status)
-    self.assertValidationError(response, { 'y_size': 'max value is 9999' })
-
-  def test_x_is_alpha_container_creation(self):
-    data = utils.merge_dict(self.valid_creation_resource(), { 'x_is_alpha': 'yes' })
+  def test_num_of_rows_max_container_creation(self):
+    data = valid_container_params({ 'num_of_rows': 10000 })
 
     response, status = self.post('/containers', data=data)
 
     self.assertValidationErrorStatus(status)
-    self.assertValidationError(response, { 'x_is_alpha': 'must be of boolean type' })
+    self.assertValidationError(response, { 'num_of_rows': 'max value is 9999' })
 
-  def test_y_is_alpha_container_creation(self):
-    data = utils.merge_dict(self.valid_creation_resource(), { 'y_is_alpha': 'no' })
-
-    response, status = self.post('/containers', data=data)
-
-    self.assertValidationErrorStatus(status)
-    self.assertValidationError(response, { 'y_is_alpha': 'must be of boolean type' })
-
-  def test_x_size_required_container_creation(self):
-    data = self.valid_creation_resource()
-    del data['x_size']
-    response, status = self.post('/containers', data=data)
-
-    self.assertValidationErrorStatus(status)
-    self.assertValidationError(response, { 'x_size': 'required field' })
-
-  def test_y_size_required_container_creation(self):
-    data = self.valid_creation_resource()
-    del data['y_size']
+  def test_num_of_cols_max_container_creation(self):
+    data = valid_container_params({ 'num_of_cols': 10000 })
 
     response, status = self.post('/containers', data=data)
 
     self.assertValidationErrorStatus(status)
-    self.assertValidationError(response, { 'y_size': 'required field' })
+    self.assertValidationError(response, { 'num_of_cols': 'max value is 9999' })
 
-  def test_x_is_alpha_required_container_creation(self):
-    data = self.valid_creation_resource()
-    del data['x_is_alpha']
-
-    response, status = self.post('/containers', data=data)
-
-    self.assertValidationErrorStatus(status)
-    self.assertValidationError(response, { 'x_is_alpha': 'required field' })
-
-  def test_y_is_alpha_required_container_creation(self):
-    data = self.valid_creation_resource()
-    del data['y_is_alpha']
+  def test_row_is_alpha_container_creation(self):
+    data = valid_container_params({ 'row_is_alpha': 'yes' })
 
     response, status = self.post('/containers', data=data)
 
     self.assertValidationErrorStatus(status)
-    self.assertValidationError(response, { 'y_is_alpha': 'required field'})
+    self.assertValidationError(response, { 'row_is_alpha': 'must be of boolean type' })
 
-  def test_barcode_is_created_when_not_provided(self):
-    data = self.valid_creation_resource()
+  def test_col_is_alpha_container_creation(self):
+    data = valid_container_params({ 'col_is_alpha': 'no' })
+
+    response, status = self.post('/containers', data=data)
+
+    self.assertValidationErrorStatus(status)
+    self.assertValidationError(response, { 'col_is_alpha': 'must be of boolean type' })
+
+  def test_num_of_rows_required_container_creation(self):
+    data = valid_container_params()
+    del data['num_of_rows']
+    response, status = self.post('/containers', data=data)
+
+    self.assertValidationErrorStatus(status)
+    self.assertValidationError(response, { 'num_of_rows': 'required field' })
+
+  def test_num_of_cols_required_container_creation(self):
+    data = valid_container_params()
+    del data['num_of_cols']
+
+    response, status = self.post('/containers', data=data)
+
+    self.assertValidationErrorStatus(status)
+    self.assertValidationError(response, { 'num_of_cols': 'required field' })
+
+  def test_row_is_alpha_required_container_creation(self):
+    data = valid_container_params()
+    del data['row_is_alpha']
+
+    response, status = self.post('/containers', data=data)
+
+    self.assertValidationErrorStatus(status)
+    self.assertValidationError(response, { 'row_is_alpha': 'required field' })
+
+  def test_col_is_alpha_required_container_creation(self):
+    data = valid_container_params()
+    del data['col_is_alpha']
+
+    response, status = self.post('/containers', data=data)
+
+    self.assertValidationErrorStatus(status)
+    self.assertValidationError(response, { 'col_is_alpha': 'required field'})
+
+  def test_different_barcodes_are_created_when_not_provided(self):
+    data = valid_container_params()
 
     response, status = self.post('/containers', data=data)
 
     self.assert201(status)
-    self.assertTrue(len(response['barcode']))
+
+    bc1 = response['barcode']
+    response, status = self.post('/containers', data=data)
+
+    self.assert201(status)
+    bc2 = response['barcode']
+
+    self.assertTrue(bc1.startswith('AKER-'))
+    self.assertTrue(bc2.startswith('AKER-'))
+    self.assertNotEqual(bc1, bc2)
+
+  def test_cannot_supply_aker_barcode(self):
+    data = valid_container_params({'barcode':'aker-abc'})
+    response, status = self.post('/containers', data=data)
+    self.assertValidationErrorStatus(status)
+    self.assertValidationError(response, { 'barcode': 'AKER barcode not permitted: aker-abc'})
 
   def test_barcode_is_saved_when_provided(self):
-    data = utils.merge_dict(self.valid_creation_resource(), { 'barcode': 'xxxxxxx' })
+    data = valid_container_params({ 'barcode': 'xxxxxxx' })
 
     response, status = self.post('/containers', data=data)
 
@@ -115,7 +130,7 @@ class TestContainers(ServiceTestBase):
     self.assertEqual(response['barcode'], 'xxxxxxx')
 
   def test_barcode_is_unique(self):
-    data = utils.merge_dict(self.valid_creation_resource(), { 'barcode': 'xxxxxxx' })
+    data = valid_container_params({ 'barcode': 'xxxxxxx' })
     self.post('/containers', data=data)
     response, status = self.post('/containers', data=data)
 
@@ -124,16 +139,341 @@ class TestContainers(ServiceTestBase):
 
 
   def test_barcode_has_min_length(self):
-    data = utils.merge_dict(self.valid_creation_resource(), { 'barcode': 'xxx' })
+    data = valid_container_params({ 'barcode': 'xxx' })
     response, status = self.post('/containers', data=data)
-    print response
+
     self.assertValidationErrorStatus(status)
     self.assertValidationError(response, { 'barcode': 'min length is 7'})
 
-  def valid_creation_resource(self):
-    return {
-      'x_size': 12,
-      'y_size': 8,
-      'x_is_alpha': True,
-      'y_is_alpha': False
+  def test_address_row_alpha_incorrect(self):
+    materials_response, status = self.post('/materials', valid_material_params())
+
+    data = valid_container_params({ 'slots': [
+      {
+        'address': '1:A',
+        'material': materials_response['_id']
+      }
+    ] })
+
+    response, status = self.post('/containers', data=data)
+
+    self.assertValidationErrorStatus(status)
+    self.assertEqual(response['_issues']['slots']['0'], {'address': "1:A is in the incorrect format"})
+
+  def test_address_col_alpha_incorrect(self):
+    materials_response, status = self.post('/materials', valid_material_params())
+    data = valid_container_params({
+      'row_is_alpha': False,
+      'col_is_alpha': True,
+      'slots': [
+        {
+          'address': 'A:1',
+          'material': materials_response['_id'],
+        }
+      ]
+    })
+    response, status = self.post('/containers', data=data)
+    self.assertValidationErrorStatus(status)
+    self.assertEqual(response['_issues']['slots']['0'], {'address': "A:1 is in the incorrect format"})
+
+  def test_address_both_alpha_incorrect(self):
+    materials_response, status = self.post('/materials', valid_material_params())
+    data = valid_container_params({
+      'row_is_alpha': True,
+      'col_is_alpha': True,
+      'slots': [
+        {
+          'address': 'A:1',
+          'material': materials_response['_id'],
+        }
+      ]
+    })
+    response, status = self.post('/containers', data=data)
+    self.assertValidationErrorStatus(status)
+    self.assertEqual(response['_issues']['slots']['0'], {'address': "A:1 is in the incorrect format"})
+
+  def test_address_both_numerical_incorrect(self):
+    materials_response, status = self.post('/materials', valid_material_params())
+    data = valid_container_params({
+      'row_is_alpha': False,
+      'col_is_alpha': False,
+      'slots': [
+        {
+          'address': 'A:1',
+          'material': materials_response['_id'],
+        }
+      ]
+    })
+    response, status = self.post('/containers', data=data)
+    self.assertValidationErrorStatus(status)
+    self.assertEqual(response['_issues']['slots']['0'], {'address': "A:1 is in the incorrect format"})
+
+
+  def test_address_row_alpha(self):
+    materials_response, status = self.post('/materials', valid_material_params())
+
+    data = valid_container_params({
+      'row_is_alpha': True,
+      'col_is_alpha': False,
+      'slots': [
+      {
+        'address': 'A:1',
+        'material': materials_response['_id']
+      }
+    ] })
+
+    response, status = self.post('/containers', data=data)
+    self.assert201(status)
+
+  def test_address_col_alpha(self):
+    materials_response, status = self.post('/materials', valid_material_params())
+    data = valid_container_params({
+      'row_is_alpha': False,
+      'col_is_alpha': True,
+      'slots': [
+        {
+          'address': '1:A',
+          'material': materials_response['_id'],
+        }
+      ]
+    })
+    response, status = self.post('/containers', data=data)
+    self.assert201(status)
+
+  def test_address_both_alpha(self):
+    materials_response, status = self.post('/materials', valid_material_params())
+    data = valid_container_params({
+      'row_is_alpha': True,
+      'col_is_alpha': True,
+      'slots': [
+        {
+          'address': 'A:A',
+          'material': materials_response['_id'],
+        }
+      ]
+    })
+    response, status = self.post('/containers', data=data)
+    self.assert201(status)
+
+  def test_address_both_numerical(self):
+    materials_response, status = self.post('/materials', valid_material_params())
+    data = valid_container_params({
+      'row_is_alpha': False,
+      'col_is_alpha': False,
+      'slots': [
+        {
+          'address': '1',
+          'material': materials_response['_id'],
+        }
+      ]
+    })
+    response, status = self.post('/containers', data=data)
+    self.assert201(status)
+
+  def test_out_of_range_row(self):
+    materials_response, status = self.post('/materials', valid_material_params())
+    data = valid_container_params({
+      'slots': [
+        {
+          'address': 'I:12',
+          'material': materials_response['_id'],
+        }
+      ]
+      })
+    response, status = self.post('/containers', data=data)
+    self.assertValidationErrorStatus(status)
+    self.assertEqual(response['_issues']['slots']['0'], {'address': "Row out of range in I:12"})
+
+  def test_out_of_upper_range_col(self):
+    materials_response, status = self.post('/materials', valid_material_params())
+    data = valid_container_params({
+      'slots': [
+        {
+          'address': 'H:13',
+          'material': materials_response['_id'],
+        }
+      ]
+      })
+    response, status = self.post('/containers', data=data)
+    self.assertValidationErrorStatus(status)
+    self.assertEqual(response['_issues']['slots']['0'], {'address': "Column out of range in H:13"})
+
+  def test_out_of_lower_range_col(self):
+    materials_response, status = self.post('/materials', valid_material_params())
+    data = valid_container_params({
+      'slots': [
+        {
+          'address': 'H:0',
+          'material': materials_response['_id'],
+        }
+      ]
+      })
+    response, status = self.post('/containers', data=data)
+    self.assertValidationErrorStatus(status)
+    self.assertEqual(response['_issues']['slots']['0'], {'address': "Column out of range in H:0"})
+
+  def test_out_of_range_both_numeric(self):
+    materials_response, status = self.post('/materials', valid_material_params())
+    data = valid_container_params({
+      'row_is_alpha' : False,
+      'slots': [
+        {
+          'address': '97',
+          'material': materials_response['_id'],
+        }
+      ]
+      })
+    response, status = self.post('/containers', data=data)
+    self.assertValidationErrorStatus(status)
+    self.assertEqual(response['_issues']['slots']['0'], {'address': "Address out of range in 97"})
+
+  def test_out_of_lower_range_address(self):
+    materials_response, status = self.post('/materials', valid_material_params())
+    data = valid_container_params({
+      'row_is_alpha' : False,
+      'slots': [
+        {
+          'address': '0',
+          'material': materials_response['_id'],
+        }
+      ]
+      })
+    response, status = self.post('/containers', data=data)
+    self.assertValidationErrorStatus(status)
+    self.assertEqual(response['_issues']['slots']['0'], {'address': "Address out of range in 0"})
+
+  def test_multiple_addresses_all_duplicates(self):
+    materials_response, status = self.post('/materials', valid_material_params())
+    data = valid_container_params({
+      'slots': [
+        {
+          'address': 'A:1',
+          'material': materials_response['_id'],
+        },
+        {
+          'address': 'A:1',
+          'material': materials_response['_id'],
+        }
+      ]
+    })
+    response, status = self.post('/containers', data=data)
+    self.assertValidationErrorStatus(status)
+    self.assertValidationError(response, { 'slots': "Address A:1 is a duplicate"})
+
+  def test_multiple_addresses_some_duplicates(self):
+    materials_response, status = self.post('/materials', valid_material_params())
+    data = valid_container_params({
+      'slots': [
+        {
+          'address': 'A:1',
+          'material': materials_response['_id'],
+        },
+        {
+          'address': 'A:1',
+          'material': materials_response['_id'],
+        },
+        {
+          'address': 'E:5',
+          'material': materials_response['_id'],
+        },
+        {
+          'address': 'E:5',
+          'material': materials_response['_id'],
+        },
+        {
+          'address': 'F:7',
+          'material': materials_response['_id'],
+        }
+      ]
+    })
+    response, status = self.post('/containers', data=data)
+    self.assertValidationErrorStatus(status)
+    self.assertValidationError(response, { 'slots': "Address A:1 is a duplicate"})
+    self.assertValidationError(response, { 'slots': "Address E:5 is a duplicate"})
+    self.assertEqual(len(response['_issues']['slots']), 2)
+
+  def test_multiple_addresses_no_duplicates(self):
+    materials_response, status = self.post('/materials', valid_material_params())
+    data = valid_container_params({
+      'slots': [
+        {
+          'address': 'A:1',
+          'material': materials_response['_id'],
+        },
+        {
+          'address': 'B:2',
+          'material': materials_response['_id'],
+        },
+        {
+          'address': 'C:3',
+          'material': materials_response['_id'],
+        }
+      ]
+    })
+    response, status = self.post('/containers', data=data)
+    self.assert201(status)
+
+  def test_materials_can_be_embedded(self):
+    materials_response, status = self.post('/materials', valid_material_params())
+    data = valid_container_params({
+      'slots': [
+        {
+          'address': 'A:1',
+          'material': materials_response['_id'],
+        }
+      ]
+    })
+
+    container, _ = self.post('/containers', data=data)
+
+    response, status = self.get('containers/' + container['_id'] + '?embedded={"slots.material": 1}')
+
+    self.assert200(status)
+
+    del materials_response['_links']
+    del materials_response['_status']
+
+    self.assertEqual(response['slots'][0]['material'], materials_response)
+
+  def test_row_alpha_range(self):
+    data = valid_container_params({
+      'row_is_alpha': True,
+      'num_of_rows': 27,
+    })
+    response, status = self.post('/containers', data=data)
+    self.assertValidationErrorStatus(status)
+    self.assertValidationError(response, { 'num_of_rows': 'Too many rows for alphabetical enumeration'})
+
+  def test_column_alpha_range(self):
+    data = valid_container_params({
+      'col_is_alpha': True,
+      'num_of_cols': 27,
+    })
+    response, status = self.post('/containers', data=data)
+    self.assertValidationErrorStatus(status)
+    self.assertValidationError(response, { 'num_of_cols': 'Too many columns for alphabetical enumeration'})
+
+  def test_column_numerical_range(self):
+    data = valid_container_params({
+      'row_is_alpha': False,
+      'col_is_alpha': False,
+      'num_of_rows': 27,
+      'num_of_cols': 27,
+    })
+    response, status = self.post('/containers', data=data)
+    self.assert201(status)
+
+
+
+
+def valid_container_params(changes=None):
+  d = {
+      'num_of_rows': 8,
+      'num_of_cols': 12,
+      'row_is_alpha': True,
+      'col_is_alpha': False
     }
+  if changes:
+    d.update(changes)
+  return d
+

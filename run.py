@@ -13,6 +13,7 @@ from flask_bootstrap import Bootstrap
 from eve_swagger import swagger
 from bson import json_util
 from flask_zipkin import Zipkin
+from pymongo import ReturnDocument
 
 environment = os.getenv('EVE_ENV', 'development')
 
@@ -20,6 +21,13 @@ SETTINGS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'db', e
 
 def create_app(settings):
   app = Eve(settings=settings, json_encoder=UUIDEncoder, validator=CustomValidator)
+
+  # We are using a document in the counters collection to generate sequential ids to be
+  # used for barcodes. Here we're "seeding" the collection with the inital document
+  with app.app_context():
+    current_app.data.driver.db \
+      .get_collection('counters') \
+      .update({ '_id': 'barcode' }, { 'seq': 0 }, upsert=True )
 
   Bootstrap(app)
   app.register_blueprint(swagger)
@@ -33,7 +41,12 @@ def create_app(settings):
   def set_barcode_if_not_present(containers):
     for container in containers:
       if 'barcode' not in container:
-        container['barcode'] = 'AKER-' + str(uuid.uuid4())[:8]
+        result = app.data.driver.db.counters.find_one_and_update(
+          {'_id': 'barcode'},
+          {'$inc': { 'seq': 1 }},
+          return_document=ReturnDocument.AFTER)
+
+        container['barcode'] = 'AKER-%s'%result['seq']
 
   app.on_insert_containers += set_barcode_if_not_present
 
@@ -119,7 +132,7 @@ def create_app(settings):
     materials = json.dumps(materials, default=json_util.default)
 
     resp = Response(response=materials,
-        status=200, \
+        status=200,
         mimetype="application/json")
 
     return (resp)
