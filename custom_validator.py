@@ -81,3 +81,4 @@ class CustomValidator(Validator):
     def _validate_col_alpha_range(self, col_alpha_range, field, value):
       if col_alpha_range and self.document.get('col_is_alpha') and value > 26:
         self._error(field, 'Too many columns for alphabetical enumeration')
+

@@ -48,7 +48,37 @@ def create_app(settings):
 
         container['barcode'] = 'AKER-%s'%result['seq']
 
+  def expected_slot_addresses(container):
+    rowalpha = container.get('row_is_alpha')
+    colalpha = container.get('col_is_alpha')
+    numrows = container['num_of_rows']
+    numcols = container['num_of_cols']
+    if not (rowalpha or colalpha):
+      return [str(n) for n in xrange(1, numrows*numcols+1)]
+    if rowalpha:
+      rows = [chr(ord('A')+i) for i in xrange(numrows)]
+    else:
+      rows = [str(i) for i in xrange(1, numrows+1)]
+    if colalpha:
+      cols = [chr(ord('A')+i) for i in xrange(numcols)]
+    else:
+      cols = [str(i) for i in xrange(1, numcols+1)]
+    return ['%s:%s'%(row, col) for row in rows for col in cols]
+
+  def insert_empty_slots(containers, addressfn=expected_slot_addresses):
+    for container in containers:
+      addresses = addressfn(container)
+      slots = container.get('slots')
+      if not slots:
+        container['slots'] = [{ 'address': address } for address in addresses]
+      else:
+        definedaddresses = { slot['address'] for slot in container['slots'] }
+        for address in addresses:
+          if address not in definedaddresses:
+            slots.append({'address': address})
+
   app.on_insert_containers += set_barcode_if_not_present
+  app.on_insert_containers += insert_empty_slots
 
   # Very rudimentary validation method... just for development!
   @app.route('/materials/validate', methods=['POST'])

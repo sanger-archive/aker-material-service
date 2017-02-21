@@ -1,2 +1,4 @@
 def merge_dict(x, y):
-  return dict(x.items() + y.items())
+  z = x.copy()
+  z.update(y)
+  return z

@@ -1,6 +1,7 @@
 import utils
 
 from tests import ServiceTestBase, valid_material_params
+from itertools import izip
 
 class TestContainers(ServiceTestBase):
 
@@ -463,8 +464,53 @@ class TestContainers(ServiceTestBase):
     response, status = self.post('/containers', data=data)
     self.assert201(status)
 
+  def test_plate_with_no_slots_has_slots_added_row_alpha(self):
+    data = valid_container_params({
+      'row_is_alpha': True,
+      'col_is_alpha': False,
+      'num_of_rows': 2,
+      'num_of_cols': 3,
+      })
+    expectedaddresses = 'A:1 A:2 A:3 B:1 B:2 B:3'.split()
+    response, status = self.post('/containers', data=data)
+    self.assert201(status)
+    slots = response['slots']
+    self.assertEqual(len(slots), len(expectedaddresses))
+    for slot, ad in izip(slots, expectedaddresses):
+      self.assertEqual(slot.get('material'), None)
+      self.assertEqual(slot.get('address'), ad)
 
+  def test_plate_with_no_slots_has_slots_added_col_alpha(self):
+    data = valid_container_params({
+      'row_is_alpha': False,
+      'col_is_alpha': True,
+      'num_of_rows': 2,
+      'num_of_cols': 3,
+      })
+    expectedaddresses = '1:A 1:B 1:C 2:A 2:B 2:C'.split()
+    response, status = self.post('/containers', data=data)
+    self.assert201(status)
+    slots = response['slots']
+    self.assertEqual(len(slots), len(expectedaddresses))
+    for slot, ad in izip(slots, expectedaddresses):
+      self.assertEqual(slot.get('material'), None)
+      self.assertEqual(slot.get('address'), ad)
 
+  def test_plate_with_no_slots_has_slots_added_numeric(self):
+    data = valid_container_params({
+      'row_is_alpha': False,
+      'col_is_alpha': False,
+      'num_of_rows': 2,
+      'num_of_cols': 3,
+      })
+    expectedaddresses = map(str, range(1,7))
+    response, status = self.post('/containers', data=data)
+    self.assert201(status)
+    slots = response['slots']
+    self.assertEqual(len(slots), len(expectedaddresses))
+    for slot, ad in izip(slots, expectedaddresses):
+      self.assertEqual(slot.get('material'), None)
+      self.assertEqual(slot.get('address'), ad)
 
 def valid_container_params(changes=None):
   d = {
