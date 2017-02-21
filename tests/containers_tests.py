@@ -512,6 +512,36 @@ class TestContainers(ServiceTestBase):
       self.assertEqual(slot.get('material'), None)
       self.assertEqual(slot.get('address'), ad)
 
+  def test_plate_with_some_slots_has_empty_slots_added(self):
+    materials_response, status = self.post('/materials', valid_material_params())
+    material_id = materials_response['_id']
+    data = valid_container_params({
+      'row_is_alpha': True,
+      'col_is_alpha': False,
+      'num_of_rows': 2,
+      'num_of_cols': 3,
+      'slots': [
+        {
+          'address': 'A:1',
+          'material': material_id,
+        }
+      ]
+    })
+    container, _ = self.post('/containers', data=data)
+
+    response, status = self.get('containers/%s?embedded={"slots.material": 1}'%container['_id'])
+
+    self.assert200(status)
+    slots = response['slots']
+    self.assertEqual(len(slots), 6)
+    expectedaddresses = 'A:1 A:2 A:3 B:1 B:2 B:3'.split()
+    for slot, address in izip(slots, expectedaddresses):
+      self.assertEqual(slot['address'], address)
+      if address=='A:1':
+        self.assertEqual(slot['material']['_id'], material_id)
+      else:
+        self.assertEqual(slot.get('material'), None)
+
 def valid_container_params(changes=None):
   d = {
       'num_of_rows': 8,
