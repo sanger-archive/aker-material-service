@@ -14,6 +14,7 @@ from eve_swagger import swagger
 from bson import json_util
 from flask_zipkin import Zipkin
 from pymongo import ReturnDocument
+from addresser import Addresser
 
 environment = os.getenv('EVE_ENV', 'development')
 
@@ -48,32 +49,16 @@ def create_app(settings):
 
         container['barcode'] = 'AKER-%s'%result['seq']
 
-  def expected_slot_addresses(container):
-    rowalpha = container.get('row_is_alpha')
-    colalpha = container.get('col_is_alpha')
-    numrows = container['num_of_rows']
-    numcols = container['num_of_cols']
-    if not (rowalpha or colalpha):
-      return [str(n) for n in xrange(1, numrows*numcols+1)]
-    if rowalpha:
-      rows = [chr(ord('A')+i) for i in xrange(numrows)]
-    else:
-      rows = [str(i) for i in xrange(1, numrows+1)]
-    if colalpha:
-      cols = [chr(ord('A')+i) for i in xrange(numcols)]
-    else:
-      cols = [str(i) for i in xrange(1, numcols+1)]
-    return ['%s:%s'%(row, col) for row in rows for col in cols]
-
-  def insert_empty_slots(containers, addressfn=expected_slot_addresses):
+  def insert_empty_slots(containers):
     for container in containers:
-      addresses = addressfn(container)
+      addresser = Addresser(container['num_of_rows'], container['num_of_cols'],
+                           bool(container.get('row_is_alpha')), bool(container.get('col_is_alpha')))
       slots = container.get('slots')
       if not slots:
-        container['slots'] = [{ 'address': address } for address in addresses]
+        container['slots'] = [{ 'address': address } for address in addresser]
       else:
         definedaddresses = { slot['address'] for slot in container['slots'] }
-        for address in addresses:
+        for address in addresser:
           if address not in definedaddresses:
             slots.append({'address': address})
 
