@@ -9,7 +9,6 @@ from uuid_encoder import UUIDEncoder
 from custom_validator import CustomValidator
 from eve import Eve
 from flask import request, jsonify, abort, Response, current_app
-from flask_bootstrap import Bootstrap
 from eve_swagger import swagger
 from bson import json_util
 from flask_zipkin import Zipkin
@@ -30,7 +29,6 @@ def create_app(settings):
       .get_collection('counters') \
       .update({'_id': 'barcode'}, {'$setOnInsert': {'seq': 0}}, upsert=True)
 
-  Bootstrap(app)
   app.register_blueprint(swagger)
 
   def set_uuid(resource_name, items):
