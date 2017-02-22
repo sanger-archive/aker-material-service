@@ -9,5 +9,3 @@ MONGO_PORT = 27017
 MONGO_DBNAME = 'materials_test'
 
 ZIPKIN_DISABLE = True
-
-BANDWIDTH_SAVER = False
