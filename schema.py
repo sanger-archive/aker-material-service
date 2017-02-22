@@ -16,7 +16,7 @@ ITEM_URL = 'regex("[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a
 
 SWAGGER_INFO = {
   'title': 'Materials Service',
-  'description': 'An RESTful web service for storing material data',
+  'description': 'A RESTful web service for storing material data',
   'version': 'v1'
 }
 
@@ -73,8 +73,63 @@ material_schema = {
   }
 }
 
+container_schema = {
+  '_id': {
+    'type': 'uuid'
+  },
+  'num_of_rows': {
+    'type': 'integer',
+    'min': 1,
+    'max': 9999,
+    'required': True,
+    'row_alpha_range': True
+  },
+  'num_of_cols': {
+    'type': 'integer',
+    'min': 1,
+    'max': 9999,
+    'required': True,
+    'col_alpha_range': True
+  },
+  'row_is_alpha': {
+    'type': 'boolean',
+    'required': True
+  },
+  'col_is_alpha': {
+    'type': 'boolean',
+    'required': True
+  },
+  'barcode': {
+    'type': 'string',
+    'unique': True,
+    'minlength': 7,
+    'non_aker_barcode': True,
+  },
+  'slots': {
+    'type': 'list',
+    'uniqueaddresses': True,
+    'schema': {
+      'type': 'dict',
+      'schema': {
+        'address': { 'type': 'string', 'address': True },
+        'material': {
+          'type': 'uuid',
+          'data_relation': {
+            'resource': 'materials',
+            'field': '_id',
+            'embeddable': True
+          }
+        }
+      }
+    }
+  }
+}
+
 DOMAIN = {
   'materials': {
     'schema': material_schema
+  },
+  'containers': {
+    'schema': container_schema
   }
 }

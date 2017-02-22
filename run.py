@@ -6,20 +6,28 @@ import copy
 import pdb
 
 from uuid_encoder import UUIDEncoder
-from uuid_validator import UUIDValidator
+from custom_validator import CustomValidator
 from eve import Eve
 from flask import request, jsonify, abort, Response, current_app
 from flask_bootstrap import Bootstrap
 from eve_swagger import swagger
 from bson import json_util
 from flask_zipkin import Zipkin
+from pymongo import ReturnDocument
 
 environment = os.getenv('EVE_ENV', 'development')
 
 SETTINGS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'db', environment + '.py')
 
 def create_app(settings):
-  app = Eve(settings=settings, json_encoder=UUIDEncoder, validator=UUIDValidator)
+  app = Eve(settings=settings, json_encoder=UUIDEncoder, validator=CustomValidator)
+
+  # We are using a document in the counters collection to generate sequential ids to be
+  # used for barcodes. Here we're "seeding" the collection with the inital document
+  with app.app_context():
+    current_app.data.driver.db \
+      .get_collection('counters') \
+      .update({'_id': 'barcode'}, {'$setOnInsert': {'seq': 0}}, upsert=True)
 
   Bootstrap(app)
   app.register_blueprint(swagger)
@@ -29,6 +37,48 @@ def create_app(settings):
       item['_id'] = str(uuid.uuid4())
 
   app.on_insert += set_uuid
+
+  def set_barcode_if_not_present(containers):
+    for container in containers:
+      if 'barcode' not in container:
+        result = app.data.driver.db.counters.find_one_and_update(
+          {'_id': 'barcode'},
+          {'$inc': { 'seq': 1 }},
+          return_document=ReturnDocument.AFTER)
+
+        container['barcode'] = 'AKER-%s'%result['seq']
+
+  def expected_slot_addresses(container):
+    rowalpha = container.get('row_is_alpha')
+    colalpha = container.get('col_is_alpha')
+    numrows = container['num_of_rows']
+    numcols = container['num_of_cols']
+    if not (rowalpha or colalpha):
+      return [str(n) for n in xrange(1, numrows*numcols+1)]
+    if rowalpha:
+      rows = [chr(ord('A')+i) for i in xrange(numrows)]
+    else:
+      rows = [str(i) for i in xrange(1, numrows+1)]
+    if colalpha:
+      cols = [chr(ord('A')+i) for i in xrange(numcols)]
+    else:
+      cols = [str(i) for i in xrange(1, numcols+1)]
+    return ['%s:%s'%(row, col) for row in rows for col in cols]
+
+  def insert_empty_slots(containers, addressfn=expected_slot_addresses):
+    for container in containers:
+      addresses = addressfn(container)
+      slots = container.get('slots')
+      if not slots:
+        container['slots'] = [{ 'address': address } for address in addresses]
+      else:
+        definedaddresses = { slot['address'] for slot in container['slots'] }
+        for address in addresses:
+          if address not in definedaddresses:
+            slots.append({'address': address})
+
+  app.on_insert_containers += set_barcode_if_not_present
+  app.on_insert_containers += insert_empty_slots
 
   # Very rudimentary validation method... just for development!
   @app.route('/materials/validate', methods=['POST'])
@@ -112,7 +162,7 @@ def create_app(settings):
     materials = json.dumps(materials, default=json_util.default)
 
     resp = Response(response=materials,
-        status=200, \
+        status=200,
         mimetype="application/json")
 
     return (resp)
@@ -135,11 +185,7 @@ app = create_app(SETTINGS_PATH)
 # we have to explictly set the logging level
 # to INFO to get our custom message logged.
 app.logger.setLevel(logging.INFO)
-
-# the default log level is set to WARNING, so
-# we have to explictly set the logging level
-# to INFO to get our custom message logged.
-app.logger.setLevel(logging.INFO)
+app.logger.addHandler(handler)
 
 zipkin = Zipkin(sample_rate=1)
 zipkin.init_app(app)
