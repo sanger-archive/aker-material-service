@@ -27,7 +27,7 @@ def create_app(settings):
   with app.app_context():
     current_app.data.driver.db \
       .get_collection('counters') \
-      .update({ '_id': 'barcode' }, { 'seq': 0 }, upsert=True )
+      .update({'_id': 'barcode'}, {'$setOnInsert': {'seq': 0}}, upsert=True)
 
   Bootstrap(app)
   app.register_blueprint(swagger)
