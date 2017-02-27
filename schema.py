@@ -102,8 +102,9 @@ container_schema = {
   'barcode': {
     'type': 'string',
     'unique': True,
-    'minlength': 7,
-    'non_aker_barcode': True,
+    'minlength': 6,
+    'required': False,
+    'non_aker_barcode': False
   },
   'slots': {
     'type': 'list',
