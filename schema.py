@@ -93,6 +93,12 @@ container_schema = {
     'required': True,
     'col_alpha_range': True
   },
+  'print_count': {
+    'type': 'integer',
+    'min': 1,
+    'max': 9999,
+    'required': False    
+  },
   'row_is_alpha': {
     'type': 'boolean',
     'required': True
@@ -105,7 +111,7 @@ container_schema = {
     'type': 'string',
     'unique': True,
     'minlength': 7,
-    'non_aker_barcode': True,
+    'non_aker_barcode': False,
   },
   'slots': {
     'type': 'list',
