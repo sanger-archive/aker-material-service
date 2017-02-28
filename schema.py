@@ -95,7 +95,7 @@ container_schema = {
   },
   'print_count': {
     'type': 'integer',
-    'min': 1,
+    'min': 0,
     'max': 9999,
     'required': False    
   },
