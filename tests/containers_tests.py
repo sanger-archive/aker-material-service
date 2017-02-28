@@ -2,6 +2,7 @@ import utils
 
 from tests import ServiceTestBase, valid_material_params
 from itertools import izip
+import pdb
 
 class TestContainers(ServiceTestBase):
 
@@ -117,10 +118,14 @@ class TestContainers(ServiceTestBase):
     self.assertNotEqual(bc1, bc2)
 
   def test_cannot_supply_aker_barcode(self):
-    data = valid_container_params({'barcode':'aker-abc'})
-    response, status = self.post('/containers', data=data)
-    self.assertValidationErrorStatus(status)
-    self.assertValidationError(response, { 'barcode': 'AKER barcode not permitted: aker-abc'})
+    data = valid_container_params()
+
+    response, status = self.get(self.domain['containers']['url']+'/schema')
+    if response['barcode']['non_aker_barcode']:
+      data = valid_container_params({'barcode':'aker-abc'})
+      response, status = self.post('/containers', data=data)
+      self.assertValidationErrorStatus(status)
+      self.assertValidationError(response, { 'barcode': 'AKER barcode not permitted: aker-abc'})
 
   def test_barcode_is_saved_when_provided(self):
     data = valid_container_params({ 'barcode': 'xxxxxxx' })

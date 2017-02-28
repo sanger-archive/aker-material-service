@@ -134,6 +134,16 @@ def create_app(settings):
     resp = Response(response=schema_str, status=200, mimetype="application/json")
     return (resp)
 
+  @app.route('/containers/schema', methods=['GET'])
+  def bulk_containers_schema(**lookup):
+    schema_obj = current_app.config['DOMAIN']['containers']['schema']
+
+    schema_str = json.dumps(schema_obj, default=json_util.default)
+
+    resp = Response(response=schema_str, status=200, mimetype="application/json")
+    return (resp)
+
+
   @app.route('/materials/bulk_get', methods=['POST'])
   def bulk_get(**lookup):
     if not 'materials' in request.json:
