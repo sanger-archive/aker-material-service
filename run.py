@@ -9,8 +9,8 @@ from uuid_encoder import UUIDEncoder
 from custom_validator import CustomValidator
 from eve import Eve
 from flask import request, jsonify, abort, Response, current_app
-from flask_bootstrap import Bootstrap
 from eve_swagger import swagger
+from flask_swagger_ui import get_swaggerui_blueprint
 from bson import json_util
 from flask_zipkin import Zipkin
 from pymongo import ReturnDocument
@@ -19,6 +19,8 @@ from addresser import Addresser
 environment = os.getenv('EVE_ENV', 'development')
 
 SETTINGS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'db', environment + '.py')
+SWAGGER_URL = '/docs'  # URL for exposing Swagger UI (without trailing '/')
+API_URL = '/api-docs'  # Our API url (can of course be a local resource)
 
 def create_app(settings):
   app = Eve(settings=settings, json_encoder=UUIDEncoder, validator=CustomValidator)
@@ -30,8 +32,11 @@ def create_app(settings):
       .get_collection('counters') \
       .update({'_id': 'barcode'}, {'$setOnInsert': {'seq': 0}}, upsert=True)
 
-  Bootstrap(app)
+  # Create a swagger.json
   app.register_blueprint(swagger)
+
+  # Configure swagger ui to display docs using swagger.json @ SWAGGER_URL
+  app.register_blueprint(get_swaggerui_blueprint(SWAGGER_URL, API_URL), url_prefix=SWAGGER_URL)
 
   def set_uuid(resource_name, items):
     for item in items:
