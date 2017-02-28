@@ -1,6 +1,7 @@
 from eve.io.mongo import Validator
 from uuid import UUID
 from collections import Counter
+from addresser import Addresser
 
 class CustomValidator(Validator):
     """
@@ -13,51 +14,19 @@ class CustomValidator(Validator):
             self._error(field, "value %r cannot be converted to a UUID" %
                         value)
 
+    def make_addresser(self):
+      doc = self.document
+      return Addresser(doc['num_of_rows'], doc['num_of_cols'],
+          bool(doc.get('row_is_alpha')), bool(doc.get('col_is_alpha')))
+
     def _validate_address(self, address, field, value):
       if not address:
         return
-      ad = self.parse_address(value)
-      if ad is None:
-        self._error(field, '%s is in the incorrect format'%value)
-        return
-      num_rows = self.document['num_of_rows']
-      num_cols = self.document['num_of_cols']
-      if isinstance(ad, tuple):
-        r, c = ad
-        if not 1<=r<=num_rows:
-          self._error(field, 'Row out of range in %s'%value)
-        if not 1<=c<=num_cols:
-          self._error(field, 'Column out of range in %s'%value)
-      else:
-        if not 1<=ad<=num_rows*num_cols:
-          self._error(field, 'Address out of range in %s'%value)
-
-
-    def parse_address(self, address):
-      row_alpha = self.document.get('row_is_alpha')
-      col_alpha = self.document.get('col_is_alpha')
-      if row_alpha or col_alpha:
-        if ':' not in address:
-          return None
-        r,c = address.split(':')
-        row_index = self.address_value(r, row_alpha)
-        col_index = self.address_value(c, col_alpha)
-        if None in (row_index, col_index):
-          return None
-        return row_index, col_index
-      if not address.isdigit():
-        return None
-      return int(address)
-
-    def address_value(self, value, alpha):
-      if alpha:
-        if not 'A'<=value<='Z':
-          return None
-        return ord(value)-ord('A')+1
-      else:
-        if not value.isdigit():
-          return None
-        return int(value)
+      addresser = self.make_addresser()
+      try:
+        addresser.index(value)
+      except ValueError as e:
+        self._error(field, e.message)
 
     def _validate_uniqueaddresses(self, unique_addresses, field, value):
       if not unique_addresses:

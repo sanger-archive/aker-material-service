@@ -9,15 +9,18 @@ from uuid_encoder import UUIDEncoder
 from custom_validator import CustomValidator
 from eve import Eve
 from flask import request, jsonify, abort, Response, current_app
-from flask_bootstrap import Bootstrap
 from eve_swagger import swagger
+from flask_swagger_ui import get_swaggerui_blueprint
 from bson import json_util
 from flask_zipkin import Zipkin
 from pymongo import ReturnDocument
+from addresser import Addresser
 
 environment = os.getenv('EVE_ENV', 'development')
 
 SETTINGS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'db', environment + '.py')
+SWAGGER_URL = '/docs'  # URL for exposing Swagger UI (without trailing '/')
+API_URL = '/api-docs'  # Our API url (can of course be a local resource)
 
 def create_app(settings):
   app = Eve(settings=settings, json_encoder=UUIDEncoder, validator=CustomValidator)
@@ -29,8 +32,11 @@ def create_app(settings):
       .get_collection('counters') \
       .update({'_id': 'barcode'}, {'$setOnInsert': {'seq': 0}}, upsert=True)
 
-  Bootstrap(app)
+  # Create a swagger.json
   app.register_blueprint(swagger)
+
+  # Configure swagger ui to display docs using swagger.json @ SWAGGER_URL
+  app.register_blueprint(get_swaggerui_blueprint(SWAGGER_URL, API_URL), url_prefix=SWAGGER_URL)
 
   def set_uuid(resource_name, items):
     for item in items:
@@ -48,32 +54,16 @@ def create_app(settings):
 
         container['barcode'] = 'AKER-%s'%result['seq']
 
-  def expected_slot_addresses(container):
-    rowalpha = container.get('row_is_alpha')
-    colalpha = container.get('col_is_alpha')
-    numrows = container['num_of_rows']
-    numcols = container['num_of_cols']
-    if not (rowalpha or colalpha):
-      return [str(n) for n in xrange(1, numrows*numcols+1)]
-    if rowalpha:
-      rows = [chr(ord('A')+i) for i in xrange(numrows)]
-    else:
-      rows = [str(i) for i in xrange(1, numrows+1)]
-    if colalpha:
-      cols = [chr(ord('A')+i) for i in xrange(numcols)]
-    else:
-      cols = [str(i) for i in xrange(1, numcols+1)]
-    return ['%s:%s'%(row, col) for row in rows for col in cols]
-
-  def insert_empty_slots(containers, addressfn=expected_slot_addresses):
+  def insert_empty_slots(containers):
     for container in containers:
-      addresses = addressfn(container)
+      addresser = Addresser(container['num_of_rows'], container['num_of_cols'],
+                           bool(container.get('row_is_alpha')), bool(container.get('col_is_alpha')))
       slots = container.get('slots')
       if not slots:
-        container['slots'] = [{ 'address': address } for address in addresses]
+        container['slots'] = [{ 'address': address } for address in addresser]
       else:
         definedaddresses = { slot['address'] for slot in container['slots'] }
-        for address in addresses:
+        for address in addresser:
           if address not in definedaddresses:
             slots.append({'address': address})
 
@@ -148,6 +138,16 @@ def create_app(settings):
 
     resp = Response(response=schema_str, status=200, mimetype="application/json")
     return (resp)
+
+  @app.route('/containers/schema', methods=['GET'])
+  def bulk_containers_schema(**lookup):
+    schema_obj = current_app.config['DOMAIN']['containers']['schema']
+
+    schema_str = json.dumps(schema_obj, default=json_util.default)
+
+    resp = Response(response=schema_str, status=200, mimetype="application/json")
+    return (resp)
+
 
   @app.route('/materials/bulk_get', methods=['POST'])
   def bulk_get(**lookup):

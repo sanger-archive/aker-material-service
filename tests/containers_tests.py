@@ -2,6 +2,7 @@ import utils
 
 from tests import ServiceTestBase, valid_material_params
 from itertools import izip
+import pdb
 
 class TestContainers(ServiceTestBase):
 
@@ -117,10 +118,14 @@ class TestContainers(ServiceTestBase):
     self.assertNotEqual(bc1, bc2)
 
   def test_cannot_supply_aker_barcode(self):
-    data = valid_container_params({'barcode':'aker-abc'})
-    response, status = self.post('/containers', data=data)
-    self.assertValidationErrorStatus(status)
-    self.assertValidationError(response, { 'barcode': 'AKER barcode not permitted: aker-abc'})
+    data = valid_container_params()
+
+    response, status = self.get(self.domain['containers']['url']+'/schema')
+    if response['barcode']['non_aker_barcode']:
+      data = valid_container_params({'barcode':'aker-abc'})
+      response, status = self.post('/containers', data=data)
+      self.assertValidationErrorStatus(status)
+      self.assertValidationError(response, { 'barcode': 'AKER barcode not permitted: aker-abc'})
 
   def test_barcode_is_saved_when_provided(self):
     data = valid_container_params({ 'barcode': 'xxxxxxx' })
@@ -144,7 +149,7 @@ class TestContainers(ServiceTestBase):
     response, status = self.post('/containers', data=data)
 
     self.assertValidationErrorStatus(status)
-    self.assertValidationError(response, { 'barcode': 'min length is 7'})
+    self.assertValidationError(response, { 'barcode': 'min length is'})
 
   def test_address_row_alpha_incorrect(self):
     materials_response, status = self.post('/materials', valid_material_params())
@@ -159,7 +164,7 @@ class TestContainers(ServiceTestBase):
     response, status = self.post('/containers', data=data)
 
     self.assertValidationErrorStatus(status)
-    self.assertEqual(response['_issues']['slots']['0'], {'address': "1:A is in the incorrect format"})
+    self.assertEqual(response['_issues']['slots']['0'], {'address': "Invalid address format: '1:A'"})
 
   def test_address_col_alpha_incorrect(self):
     materials_response, status = self.post('/materials', valid_material_params())
@@ -175,7 +180,7 @@ class TestContainers(ServiceTestBase):
     })
     response, status = self.post('/containers', data=data)
     self.assertValidationErrorStatus(status)
-    self.assertEqual(response['_issues']['slots']['0'], {'address': "A:1 is in the incorrect format"})
+    self.assertEqual(response['_issues']['slots']['0'], {'address': "Invalid address format: 'A:1'"})
 
   def test_address_both_alpha_incorrect(self):
     materials_response, status = self.post('/materials', valid_material_params())
@@ -191,7 +196,7 @@ class TestContainers(ServiceTestBase):
     })
     response, status = self.post('/containers', data=data)
     self.assertValidationErrorStatus(status)
-    self.assertEqual(response['_issues']['slots']['0'], {'address': "A:1 is in the incorrect format"})
+    self.assertEqual(response['_issues']['slots']['0'], {'address': "Invalid address format: 'A:1'"})
 
   def test_address_both_numerical_incorrect(self):
     materials_response, status = self.post('/materials', valid_material_params())
@@ -207,7 +212,7 @@ class TestContainers(ServiceTestBase):
     })
     response, status = self.post('/containers', data=data)
     self.assertValidationErrorStatus(status)
-    self.assertEqual(response['_issues']['slots']['0'], {'address': "A:1 is in the incorrect format"})
+    self.assertEqual(response['_issues']['slots']['0'], {'address': "Invalid address format: 'A:1'"})
 
 
   def test_address_row_alpha(self):
@@ -283,7 +288,7 @@ class TestContainers(ServiceTestBase):
       })
     response, status = self.post('/containers', data=data)
     self.assertValidationErrorStatus(status)
-    self.assertEqual(response['_issues']['slots']['0'], {'address': "Row out of range in I:12"})
+    self.assertEqual(response['_issues']['slots']['0'], {'address': "Row out of range: 'I:12'"})
 
   def test_out_of_upper_range_col(self):
     materials_response, status = self.post('/materials', valid_material_params())
@@ -297,7 +302,7 @@ class TestContainers(ServiceTestBase):
       })
     response, status = self.post('/containers', data=data)
     self.assertValidationErrorStatus(status)
-    self.assertEqual(response['_issues']['slots']['0'], {'address': "Column out of range in H:13"})
+    self.assertEqual(response['_issues']['slots']['0'], {'address': "Column out of range: 'H:13'"})
 
   def test_out_of_lower_range_col(self):
     materials_response, status = self.post('/materials', valid_material_params())
@@ -311,7 +316,7 @@ class TestContainers(ServiceTestBase):
       })
     response, status = self.post('/containers', data=data)
     self.assertValidationErrorStatus(status)
-    self.assertEqual(response['_issues']['slots']['0'], {'address': "Column out of range in H:0"})
+    self.assertEqual(response['_issues']['slots']['0'], {'address': "Column out of range: 'H:0'"})
 
   def test_out_of_range_both_numeric(self):
     materials_response, status = self.post('/materials', valid_material_params())
@@ -326,7 +331,7 @@ class TestContainers(ServiceTestBase):
       })
     response, status = self.post('/containers', data=data)
     self.assertValidationErrorStatus(status)
-    self.assertEqual(response['_issues']['slots']['0'], {'address': "Address out of range in 97"})
+    self.assertEqual(response['_issues']['slots']['0'], {'address': "Address out of range: '97'"})
 
   def test_out_of_lower_range_address(self):
     materials_response, status = self.post('/materials', valid_material_params())
@@ -341,7 +346,7 @@ class TestContainers(ServiceTestBase):
       })
     response, status = self.post('/containers', data=data)
     self.assertValidationErrorStatus(status)
-    self.assertEqual(response['_issues']['slots']['0'], {'address': "Address out of range in 0"})
+    self.assertEqual(response['_issues']['slots']['0'], {'address': "Address out of range: '0'"})
 
   def test_multiple_addresses_all_duplicates(self):
     materials_response, status = self.post('/materials', valid_material_params())
