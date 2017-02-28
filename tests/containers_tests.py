@@ -149,7 +149,7 @@ class TestContainers(ServiceTestBase):
     response, status = self.post('/containers', data=data)
 
     self.assertValidationErrorStatus(status)
-    self.assertValidationError(response, { 'barcode': 'min length is 7'})
+    self.assertValidationError(response, { 'barcode': 'min length is'})
 
   def test_address_row_alpha_incorrect(self):
     materials_response, status = self.post('/materials', valid_material_params())
