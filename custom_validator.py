@@ -2,6 +2,7 @@ from eve.io.mongo import Validator
 from uuid import UUID
 from collections import Counter
 from addresser import Addresser
+import pdb
 
 class CustomValidator(Validator):
     """
@@ -11,8 +12,7 @@ class CustomValidator(Validator):
         try:
             UUID(value)
         except ValueError:
-            self._error(field, "value %r cannot be converted to a UUID" %
-                        value)
+            self._error(field, "value %r cannot be converted to a UUID" % value)
 
     def make_addresser(self):
       doc = self.document
@@ -40,7 +40,7 @@ class CustomValidator(Validator):
     def _validate_non_aker_barcode(self, non_aker_barcode, field, value):
       if not non_aker_barcode:
         return
-      if value.upper().startswith('AKER-'):
+      if self.is_new and value.upper().startswith('AKER-'):
         self._error(field, 'AKER barcode not permitted: %s'%value)
 
     def _validate_row_alpha_range(self, row_alpha_range, field, value):
@@ -51,3 +51,22 @@ class CustomValidator(Validator):
       if col_alpha_range and self.document.get('col_is_alpha') and value > 26:
         self._error(field, 'Too many columns for alphabetical enumeration')
 
+    def validate_immutable_barcode(self, data, existing):
+      field = u'barcode'
+      if existing and data and field in data and data[field]!=existing[field]:
+        self._error(field, 'The barcode field cannot be updated.')
+        return False
+      return True
+
+    def validate(self, *args, **kwargs):
+      self.is_new = True
+      return super(CustomValidator, self).validate(*args, **kwargs)
+
+    def validate_update(self, data, uuid, context):
+      self.is_new = False
+      validated = super(CustomValidator, self).validate_update(data, uuid, context)
+      if not self.validate_immutable_barcode(data, context):
+        validated = False
+      # TODO - block updating other fields, i.e. num_of_rows/cols, row/col_is_alpha
+      return validated
+ 

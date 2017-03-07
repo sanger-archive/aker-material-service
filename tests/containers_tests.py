@@ -547,6 +547,39 @@ class TestContainers(ServiceTestBase):
       else:
         self.assertEqual(slot.get('material'), None)
 
+  def test_update_plate_without_giving_barcode(self):
+    data = valid_container_params()
+    response, status = self.post('/containers', data=data)
+    self.assert201(status)
+    plateid = response['_id']
+    update = { 'print_count': 17 }
+    _, status = self.patch('/containers/%s'%plateid, data=update)
+    self.assert200(status)
+
+  def test_update_plate_with_different_barcode(self):
+    data = valid_container_params()
+    response, status = self.post('/containers', data=data)
+    self.assert201(status)
+    plateid = response['_id']
+    update = { 'barcode': 'COLORADO' }
+    response, status = self.patch('/containers/%s'%plateid, data=update)
+    self.assertValidationErrorStatus(status)
+    self.assertValidationError(response, { 'barcode': 'The barcode field cannot be updated'})
+
+  def test_update_plate_with_same_barcode(self):
+    data = valid_container_params()
+    response, status = self.post('/containers', data=data)
+    self.assert201(status)
+    plateid = response['_id']
+    barcode = response['barcode']
+    update = { 'print_count': 17, 'barcode': barcode }
+    _, status = self.patch('/containers/%s'%plateid, data=update)
+    self.assert200(status)
+    # Some variations of this test fell foul of https://github.com/pyeve/eve/issues/920
+    # -- a bug about patch requests raising a 412
+
+# helper
+
 def valid_container_params(changes=None):
   d = {
       'num_of_rows': 8,
