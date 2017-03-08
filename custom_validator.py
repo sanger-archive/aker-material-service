@@ -51,10 +51,9 @@ class CustomValidator(Validator):
       if col_alpha_range and self.document.get('col_is_alpha') and value > 26:
         self._error(field, 'Too many columns for alphabetical enumeration')
 
-    def validate_immutable_barcode(self, data, existing):
-      field = u'barcode'
+    def validate_immutable_field(self, field, data, existing):
       if existing and data and field in data and data[field]!=existing[field]:
-        self._error(field, 'The barcode field cannot be updated.')
+        self._error(field, 'The %s field cannot be updated.'%field)
         return False
       return True
 
@@ -65,8 +64,8 @@ class CustomValidator(Validator):
     def validate_update(self, data, uuid, context):
       self.is_new = False
       validated = super(CustomValidator, self).validate_update(data, uuid, context)
-      if not self.validate_immutable_barcode(data, context):
-        validated = False
-      # TODO - block updating other fields, i.e. num_of_rows/cols, row/col_is_alpha
+      for field in 'num_of_rows num_of_cols row_is_alpha col_is_alpha barcode'.split():
+        if not self.validate_immutable_field(field, data, context):
+          validated = False
       return validated
  
