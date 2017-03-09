@@ -93,3 +93,4 @@ class TestMaterials(ServiceTestBase):
 
     r, status = self.get('materials', '', r['_id'])
     self.assertEqual(r['meta']['allows'], 'unknown')
+    
