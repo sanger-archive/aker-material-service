@@ -52,20 +52,27 @@ class CustomValidator(Validator):
         self._error(field, 'Too many columns for alphabetical enumeration')
 
     def validate_immutable_field(self, field, data, existing):
-      if existing and data and field in data and data[field]!=existing[field]:
+      if (existing and data and field in data and field in existing
+          and data[field]!=existing[field]):
         self._error(field, 'The %s field cannot be updated.'%field)
         return False
       return True
 
+    # POST creating a new record
     def validate(self, *args, **kwargs):
       self.is_new = True
       return super(CustomValidator, self).validate(*args, **kwargs)
 
-    def validate_update(self, data, uuid, context):
+    # PUT replacing an existing record
+    def validate_replace(self, document, _id, original_document=None):
+      return self.validate_update(document, _id, original_document)
+
+    # PATCH updating an existing record
+    def validate_update(self, document, _id, original_document=None):
       self.is_new = False
-      validated = super(CustomValidator, self).validate_update(data, uuid, context)
+      validated = super(CustomValidator, self).validate_update(document, _id, original_document)
       for field in 'num_of_rows num_of_cols row_is_alpha col_is_alpha barcode'.split():
-        if not self.validate_immutable_field(field, data, context):
+        if not self.validate_immutable_field(field, document, original_document):
           validated = False
       return validated
  
