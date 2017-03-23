@@ -111,7 +111,7 @@ def create_app(settings):
   def cerberus_to_json_filter_parameters(out_obj, filter_list):
     schema_obj_copy = out_obj['properties']
     for key in filter_list:
-      if schema_obj_copy[key]:
+      if key in schema_obj_copy:
         del schema_obj_copy[key]
 
   def cerberus_to_json_change_allowed_with_one_of(out_obj):
@@ -132,18 +132,16 @@ def create_app(settings):
 
     return out_obj
 
-  @app.route('/materials/schema', methods=['GET'])
-  def bulk_schema(**lookup):
-    schema_obj = cerberus_to_json_schema(current_app.config['DOMAIN']['materials']['schema'])
+  @app.route('/containers/json_schema', methods=['GET'])
+  def containers_json_schema(**lookup):
+    return json_schema_request('containers')
 
-    schema_str = json.dumps(schema_obj, default=json_util.default)
+  @app.route('/materials/json_schema', methods=['GET'])
+  def materials_json_schema(**lookup):
+    return json_schema_request('materials')
 
-    resp = Response(response=schema_str, status=200, mimetype="application/json")
-    return (resp)
-
-  @app.route('/containers/schema', methods=['GET'])
-  def bulk_containers_schema(**lookup):
-    schema_obj = current_app.config['DOMAIN']['containers']['schema']
+  def json_schema_request(model_name):
+    schema_obj = cerberus_to_json_schema(current_app.config['DOMAIN'][model_name]['schema'])
 
     schema_str = json.dumps(schema_obj, default=json_util.default)
 
