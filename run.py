@@ -140,14 +140,15 @@ def create_app(settings):
   def materials_json_schema(**lookup):
     return json_schema_request('materials')
 
+  # Deprecated in favour of json_schema
+  @app.route('/materials/schema', methods=['GET'])
+  def bulk_schema(**lookup):
+    return json_schema_request('materials')
+
   def json_schema_request(model_name):
     schema_obj = cerberus_to_json_schema(current_app.config['DOMAIN'][model_name]['schema'])
-
     schema_str = json.dumps(schema_obj, default=json_util.default)
-
-    resp = Response(response=schema_str, status=200, mimetype="application/json")
-    return (resp)
-
+    return Response(response=schema_str, status=200, mimetype="application/json")
 
   @app.route('/materials/bulk_get', methods=['POST'])
   def bulk_get(**lookup):
