@@ -120,8 +120,8 @@ class TestContainers(ServiceTestBase):
   def test_cannot_supply_aker_barcode(self):
     data = valid_container_params()
 
-    response, status = self.get(self.domain['containers']['url']+'/schema')
-    if response['barcode']['non_aker_barcode']:
+    response, status = self.get(self.domain['containers']['url']+'/json_schema')
+    if response['properties']['barcode']['non_aker_barcode']:
       data = valid_container_params({'barcode':'aker-abc'})
       response, status = self.post('/containers', data=data)
       self.assertValidationErrorStatus(status)
