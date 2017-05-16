@@ -35,3 +35,8 @@ The environment variable `EVE_ENV` can be used to set the environment of the app
 
 `python -m unittest discover -v -s tests -p "*tests.py"`
 
+#### Running a single test
+
+This runs the `single_test` test in the `TestMaterials` class in the `materials_tests` module.
+
+`python -m unittest tests.materials_tests.TestMaterials.single_test`
