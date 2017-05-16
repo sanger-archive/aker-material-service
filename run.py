@@ -17,6 +17,8 @@ from bson import json_util
 from flask_zipkin import Zipkin
 from pymongo import ReturnDocument
 from addresser import Addresser
+from flask_login import LoginManager, current_user
+from jwt_auth import JWTAuth
 
 environment = os.getenv('EVE_ENV', 'development')
 
@@ -25,7 +27,7 @@ SWAGGER_URL = '/docs'  # URL for exposing Swagger UI (without trailing '/')
 API_URL = '/api-docs'  # Our API url (can of course be a local resource)
 
 def create_app(settings):
-  app = Eve(settings=settings, json_encoder=UUIDEncoder, validator=CustomValidator)
+  app = Eve(settings=settings, json_encoder=UUIDEncoder, validator=CustomValidator, auth=JWTAuth)
 
   # We are using a document in the counters collection to generate sequential ids to be
   # used for barcodes. Here we're "seeding" the collection with the inital document
@@ -40,12 +42,21 @@ def create_app(settings):
   # Configure swagger ui to display docs using swagger.json @ SWAGGER_URL
   app.register_blueprint(get_swaggerui_blueprint(SWAGGER_URL, API_URL), url_prefix=SWAGGER_URL)
 
+  login_manager = LoginManager()
+  login_manager.init_app(app)
+
+  @login_manager.user_loader
+  def load_user(email):
+    return User(email)
+
+  # Application hooks
   def set_uuid(resource_name, items):
     for item in items:
       item['_id'] = str(uuid.uuid4())
 
   app.on_insert += set_uuid
 
+  # Containers hooks
   def set_barcode_if_not_present(containers):
     for container in containers:
       if 'barcode' not in container:
@@ -71,6 +82,13 @@ def create_app(settings):
 
   app.on_insert_containers += set_barcode_if_not_present
   app.on_insert_containers += insert_empty_slots
+
+  # Materials hooks
+  def set_owner_id(materials):
+    for material in materials:
+      material["owner_id"] = current_user.id
+
+  app.on_insert_materials += set_owner_id
 
   # Very rudimentary validation method... just for development!
   @app.route('/materials/validate', methods=['POST'])

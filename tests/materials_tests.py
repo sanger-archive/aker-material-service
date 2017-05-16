@@ -1,4 +1,5 @@
 import utils
+import jwt
 
 from tests import ServiceTestBase, valid_material_params
 
@@ -93,4 +94,30 @@ class TestMaterials(ServiceTestBase):
 
     r, status = self.get('materials', '', r['_id'])
     self.assertEqual(r['meta']['allows'], 'unknown')
-    
+
+  def test_owner_id_is_user_when_valid_jwt(self):
+    payload = {'data': { 'email': 'user@here.com', 'groups': ['pirates'] }}
+    auth_token = jwt.encode(payload, 'test', algorithm='HS256')
+    data = valid_material_params()
+
+    r, status = self.post('/materials', data=data, headers=[('X-Authorisation', auth_token)])
+    self.assert201(status)
+
+    r, status = self.get('materials', '', r['_id'])
+    self.assertEqual(r['owner_id'], 'user@here.com')
+
+  def test_owner_id_is_guest_when_no_jwt(self):
+    data = valid_material_params()
+
+    r, status = self.post('/materials', data=data)
+    self.assert201(status)
+
+    r, status = self.get('materials', '', r['_id'])
+    self.assertEqual(r['owner_id'], 'guest')
+
+  def test_returns_401_when_invalid_jwt(self):
+    data = valid_material_params()
+
+    r, status = self.post('/materials', data=data, headers=[('X-Authorisation', 'jibberish.jwt.rubbish')])
+    self.assert401(status)
+
