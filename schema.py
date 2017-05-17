@@ -70,8 +70,16 @@ material_schema = {
       }
     },
   },
-  'parent': {
-    'type': 'uuid'
+  'parents': {
+    'type': 'list',
+    'schema': {
+      'type': 'uuid',
+      'data_relation': {
+        'resource': 'materials',
+        'field': '_id',
+        'embeddable': True
+      }
+    },
   }
 }
 
