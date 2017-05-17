@@ -9,3 +9,5 @@ MONGO_PORT = 27017
 MONGO_DBNAME = 'materials'
 
 ZIPKIN_DISABLE = True
+
+SECRET_KEY = 'development'
