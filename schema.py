@@ -55,6 +55,9 @@ material_schema = {
   'date_of_receipt': {
     'type': 'datetime',
   },
+  'owner_id': {
+    'type': 'string'
+  },
   'meta': {
     'type': 'dict',
     'allow_unknown': True,
@@ -97,7 +100,7 @@ container_schema = {
     'type': 'integer',
     'min': 0,
     'max': 9999,
-    'required': False    
+    'required': False
   },
   'row_is_alpha': {
     'type': 'boolean',
