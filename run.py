@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import sys
 import os
 import logging
 import uuid
@@ -189,14 +190,18 @@ def create_app(settings):
   return app
 
 # enable logging to 'app.log' file
-handler = logging.FileHandler('app.log')
+log_handlers = [
+   logging.FileHandler('app.log'),
+   logging.StreamHandler(sys.stdout),
+]
 
 # set a custom log format, and add request
 # metadata to each log line
-handler.setFormatter(logging.Formatter(
-    '%(asctime)s %(levelname)s: %(message)s '
-    '[in %(filename)s:%(lineno)d] -- ip: %(clientip)s, '
-    'url: %(url)s, method:%(method)s'))
+for handler in log_handlers:
+  handler.setFormatter(logging.Formatter(
+      '%(asctime)s %(levelname)s: %(message)s '
+      '[in %(filename)s:%(lineno)d] -- ip: %(clientip)s, '
+      'url: %(url)s, method: %(method)s'))
 
 app = create_app(SETTINGS_PATH)
 
@@ -204,7 +209,26 @@ app = create_app(SETTINGS_PATH)
 # we have to explictly set the logging level
 # to INFO to get our custom message logged.
 app.logger.setLevel(logging.INFO)
-app.logger.addHandler(handler)
+
+for handler in log_handlers:
+  app.logger.addHandler(handler)
+
+def log_request_start(resource, request, lookup=None):
+  message = "%s resource=%r, request=%r"%(request.method, resource, request)
+  app.logger.info(message)
+  app.logger.info("Request data:\n"+request.data)
+
+def log_request_end(resource, request, response):
+  message = "%s resource=%r, request=%r, response=%r"%(request.method, resource, request, response)
+  app.logger.info(message)
+  if response:
+    app.logger.debug("Response data:\n"+response.data)
+
+for method in 'GET POST PATCH PUT DELETE'.split():
+  events = getattr(app, 'on_pre_'+method)
+  events += log_request_start
+  events = getattr(app, 'on_post_'+method)
+  events += log_request_end
 
 zipkin = Zipkin(sample_rate=1)
 zipkin.init_app(app)
