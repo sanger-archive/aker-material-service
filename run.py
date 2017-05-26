@@ -111,45 +111,51 @@ def create_app(settings):
     else:
       return "not ok - " + str(diff_len) + " materials not found"
 
-  def cerberus_to_json_add_required_to_obj(out_obj):
-    schema_obj_copy = out_obj['properties']
-    required_list = []
-    for key in schema_obj_copy:
-      if (('required' in schema_obj_copy[key]) and (schema_obj_copy[key]['required'])):
-        required_list += [key]
-    if len(required_list) > 0:
-      out_obj['required'] = required_list
+  def cerberus_to_json_list_required(schema):
+    return [key for key, value in schema.iteritems() if value.get('required')]
 
-  def cerberus_to_json_change_type_for_datetime(out_obj):
-    schema_obj_copy = out_obj['properties']
-    for key in schema_obj_copy:
-      if schema_obj_copy[key]['type']=='datetime':
-        schema_obj_copy[key]['type'] = 'string'
-        schema_obj_copy[key]['format'] = 'date'
+  def cerberus_to_json_change_type_for_datetime(schema):
+    for value in schema.itervalues():
+      if value['type'] == 'datetime':
+        value['type'] = 'string'
+        value['format'] = 'date'
 
-  def cerberus_to_json_filter_parameters(out_obj, filter_list):
-    schema_obj_copy = out_obj['properties']
+  def cerberus_to_json_filter_parameters(schema, filter_list):
     for key in filter_list:
-      if key in schema_obj_copy:
-        del schema_obj_copy[key]
+      schema.pop(key, None)
 
-  def cerberus_to_json_change_allowed_with_one_of(out_obj):
-    schema_obj_copy = out_obj['properties']
-    for key in schema_obj_copy:
-      if 'allowed' in schema_obj_copy[key]:
-        schema_obj_copy[key]['enum'] = schema_obj_copy[key]['allowed']
-        del schema_obj_copy[key]['allowed']
+  def cerberus_to_json_change_allowed_with_one_of(schema):
+    for value in schema.itervalues():
+      if 'allowed' in value:
+        value['enum'] = value['allowed']
+        del value['enum']
 
-  def cerberus_to_json_schema(schema_obj):
-    filter_list = ['meta', '_id', 'parent','ancestors']
-    out_obj = {'type': 'object', 'properties': copy.deepcopy(schema_obj)}
+  def cerberus_to_json_only_id_is_required(schema):
+    for key, value in schema.iteritems():
+      if key=='_id':
+        value['required'] = True
+      elif value.get('required'):
+        value['required'] = False
 
-    cerberus_to_json_change_type_for_datetime(out_obj)
-    cerberus_to_json_filter_parameters(out_obj, filter_list)
-    cerberus_to_json_add_required_to_obj(out_obj)
-    cerberus_to_json_change_allowed_with_one_of(out_obj)
+  def amend_required_order(required):
+    if 'supplier_name' in required and required[0]!='supplier_name':
+      required.remove('supplier_name')
+      required.insert(0, 'supplier_name')
 
-    return out_obj
+  def cerberus_to_json_schema(schema_obj, patch=False):
+    filter_list = ['meta', 'parent', 'ancestors']
+    if not patch:
+      filter_list.append('_id')
+    schema = copy.deepcopy(schema_obj)
+    cerberus_to_json_change_type_for_datetime(schema)
+    cerberus_to_json_filter_parameters(schema, filter_list)
+    if patch:
+      cerberus_to_json_only_id_is_required(schema)
+    cerberus_to_json_change_allowed_with_one_of(schema)
+    required = cerberus_to_json_list_required(schema)
+    amend_required_order(required)
+
+    return {'type': 'object', 'properties': schema, 'required': required}
 
   @app.route('/containers/json_schema', methods=['GET'])
   def containers_json_schema(**lookup):
@@ -164,8 +170,12 @@ def create_app(settings):
   def bulk_schema(**lookup):
     return json_schema_request('materials')
 
-  def json_schema_request(model_name):
-    schema_obj = cerberus_to_json_schema(current_app.config['DOMAIN'][model_name]['schema'])
+  @app.route('/materials/json_patch_schema', methods=['GET'])
+  def materials_json_patch_schema(**lookup):
+    return json_schema_request('materials', True)
+
+  def json_schema_request(model_name, patch=False):
+    schema_obj = cerberus_to_json_schema(current_app.config['DOMAIN'][model_name]['schema'], patch)
     schema_str = json.dumps(schema_obj, default=json_util.default)
     return Response(response=schema_str, status=200, mimetype="application/json")
 
