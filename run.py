@@ -87,7 +87,8 @@ def create_app(settings):
   # Materials hooks
   def set_owner_id(materials):
     for material in materials:
-      material["owner_id"] = current_user.id
+      if not material.get("owner_id"):
+        material["owner_id"] = current_user.id
 
   app.on_insert_materials += set_owner_id
 
