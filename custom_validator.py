@@ -2,7 +2,11 @@ from eve.io.mongo import Validator
 from uuid import UUID
 from collections import Counter
 from addresser import Addresser
+import re
+
 import pdb
+
+HMDMC_PATTERN = re.compile(r'^[0-9]{2}/[0-9]{3}$')
 
 class CustomValidator(Validator):
     """
@@ -51,9 +55,23 @@ class CustomValidator(Validator):
         if col_alpha_range and self.document.get('col_is_alpha') and value > 26:
             self._error(field, 'Too many columns for alphabetical enumeration')
 
+    def _validate_not_blank(self, not_blank, field, value):
+        if not_blank and value is not None and not value.strip():
+            self._error(field, 'The %s field cannot be blank.'%field)
+
+    def _validate_hmdmc_format(self, hmdmc_format, field, value):
+        if hmdmc_format and value is not None and not HMDMC_PATTERN.match(value):
+            self._error(field, 'HMDMCs must be of the format ##/###')
+        elif value and not self.document.get('hmdmc_set_by'):
+            self._error('hmdmc_set_by', "The hmdmc_set_by field must be specified if an hmdmc is given.")
+
+    def _validate_required_with_hmdmc(self, required_with_hmdmc, field, value):
+        if required_with_hmdmc and self.document.get('hmdmc') and not value:
+            self._error(field, "The %s field must be specified if an hmdmc is given."%field)
+
     def validate_immutable_field(self, field, data, existing):
         if (existing and data and field in data and field in existing
-            and data[field]!=existing[field]):
+                and data[field]!=existing[field]):
             self._error(field, 'The %s field cannot be updated.'%field)
             return False
         return True

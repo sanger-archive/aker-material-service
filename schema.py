@@ -50,7 +50,23 @@ material_schema = {
   },
   'phenotype': {
     'type': 'string',
-    'required': True
+    'required': True,
+  },
+  'hmdmc': {
+    'type': 'string',
+    'required': False,
+    'hmdmc_format': True,
+  },
+  'hmdmc_not_required_confirmed_by': {
+    'type': 'string',
+    'required': False,
+    'not_blank': True,
+  },
+  'hmdmc_set_by': {
+    'type': 'string',
+    'required': False,
+    'required_with_hmdmc': True,
+    'not_blank': True,
   },
   'date_of_receipt': {
     'type': 'datetime',
