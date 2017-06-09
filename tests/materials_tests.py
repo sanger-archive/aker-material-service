@@ -111,6 +111,64 @@ class TestMaterials(ServiceTestBase):
         self.assertValidationErrorStatus(status)
         self.assertValidationError(r, { 'phenotype': 'required field'})
 
+    def test_hmdmc_invalid_format(self):
+        data = valid_material_params()
+        data['hmdmc'] = '12345'
+        data['hmdmc_set_by'] = 'a@b.c'
+
+        r, status = self.post('/materials', data=data)
+
+        self.assertValidationErrorStatus(status)
+        self.assertValidationError(r, {'hmdmc': 'format'})
+
+    def test_hmdmc_blank(self):
+        data = valid_material_params()
+        data['hmdmc'] = ''
+        data['hmdmc_set_by'] = 'a@b.c'
+
+        r, status = self.post('/materials', data=data)
+
+        self.assertValidationErrorStatus(status)
+        self.assertValidationError(r, {'hmdmc': 'format'})
+
+
+    def test_hmdmc_missing_set_by(self):
+        data = valid_material_params()
+        data['hmdmc'] = '12/345'
+        r, status = self.post('/materials', data=data)
+        self.assertValidationErrorStatus(status)
+        self.assertValidationError(r, {'hmdmc_set_by': 'hmdmc'})
+
+    def test_hmdmc_with_set_by(self):
+        data = valid_material_params()
+        data['hmdmc'] = '12/345'
+        data['hmdmc_set_by'] = 'a@b.c'
+        r, status = self.post('/materials', data=data)
+        self.assert201(status)
+
+    def test_hmdmc_with_blank_set_by(self):
+        data = valid_material_params()
+        data['hmdmc'] = '12/345'
+        data['hmdmc_set_by'] = ' '
+        r, status = self.post('/materials', data=data)
+        self.assertValidationErrorStatus(status)
+        self.assertValidationError(r, {'hmdmc_set_by': 'blank'})
+
+    def test_hmdmc_with_spaces_set_by(self):
+        data = valid_material_params()
+        data['hmdmc'] = '12/345'
+        data['hmdmc_set_by'] = '  '
+        r, status = self.post('/materials', data=data)
+        self.assertValidationErrorStatus(status)
+        self.assertValidationError(r, {'hmdmc_set_by': 'blank'})
+
+    def test_hmdmc_not_required_confirmed_by_blank(self):
+        data = valid_material_params()
+        data['hmdmc_not_required_confirmed_by']=''
+        r, status = self.post('/materials', data=data)
+        self.assertValidationErrorStatus(status)
+        self.assertValidationError(r, {'hmdmc_not_required_confirmed_by': 'blank'})        
+
     def test_meta_allows_unknown(self):
         data = utils.merge_dict(valid_material_params(), { 'meta': { 'allows': 'unknown' } })
 
