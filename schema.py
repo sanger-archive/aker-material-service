@@ -30,6 +30,11 @@ material_schema = {
     'type': 'string',
     'allowed': ['blood', 'dna']
   },
+  'available': {
+    'type': 'boolean',
+    'required': False,
+    'default': False
+  },
   'supplier_name': {
     'type': 'string',
     'required': True
