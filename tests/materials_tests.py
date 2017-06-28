@@ -14,6 +14,7 @@ class TestMaterials(ServiceTestBase):
 
         self.assertRegexpMatches(r['_id'], '[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}')
 
+
     def test_material_with_parents_creation(self):
         r1, status1 = self.post(self.domain['materials']['url'], valid_material_params())
         self.assert201(status1)
@@ -167,7 +168,19 @@ class TestMaterials(ServiceTestBase):
         data['hmdmc_not_required_confirmed_by']=''
         r, status = self.post('/materials', data=data)
         self.assertValidationErrorStatus(status)
-        self.assertValidationError(r, {'hmdmc_not_required_confirmed_by': 'blank'})        
+        self.assertValidationError(r, {'hmdmc_not_required_confirmed_by': 'blank'})
+
+    def test_available(self):
+        data = valid_material_params()
+        r1, status = self.post('/materials', data=data)
+        self.assert201(status)
+        self.assertEqual(r1['available'], False) # should be False, not None
+        r2, status = self.patch('/materials/'+r1['_id'], data={ 'available': True })
+        self.assert200(status)
+        self.assertEqual(r2['available'], True)
+        r1['available'] = True # Second response should be identical to the first, but available
+        self.assertEqual(r2, r1)
+
 
     def test_meta_allows_unknown(self):
         data = utils.merge_dict(valid_material_params(), { 'meta': { 'allows': 'unknown' } })
