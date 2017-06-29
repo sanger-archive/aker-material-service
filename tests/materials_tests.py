@@ -29,10 +29,10 @@ class TestMaterials(ServiceTestBase):
         self.assertRegexpMatches(r['_id'], '[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}')
 
     def test_material_with_wrong_parents_not_created(self):
-        import uuid 
+        import uuid
 
         r1, status1 = self.post(self.domain['materials']['url'], valid_material_params())
-        self.assert201(status1)        
+        self.assert201(status1)
 
         params = valid_material_params()
         params['parents'] = [r1['_id'], str(uuid.uuid4())]
@@ -178,9 +178,6 @@ class TestMaterials(ServiceTestBase):
         r2, status = self.patch('/materials/'+r1['_id'], data={ 'available': True })
         self.assert200(status)
         self.assertEqual(r2['available'], True)
-        r1['available'] = True # Second response should be identical to the first, but available
-        self.assertEqual(r2, r1)
-
 
     def test_meta_allows_unknown(self):
         data = utils.merge_dict(valid_material_params(), { 'meta': { 'allows': 'unknown' } })
