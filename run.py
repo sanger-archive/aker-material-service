@@ -30,6 +30,8 @@ API_URL = '/api-docs'  # Our API url (can of course be a local resource)
 def create_app(settings):
   app = Eve(settings=settings, json_encoder=UUIDEncoder, validator=CustomValidator, auth=JWTAuth)
 
+  app.name = 'Materials service'
+
   # We are using a document in the counters collection to generate sequential ids to be
   # used for barcodes. Here we're "seeding" the collection with the inital document
   with app.app_context():
