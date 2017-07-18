@@ -48,10 +48,10 @@ material_schema = {
     'allowed': ['male', 'female', 'unknown'],
     'required': True
   },
-  'common_name': {
+  'scientific_name': {
     'type': 'string',
     'required': True,
-    'allowed': ['Homo Sapiens', 'Mouse']
+    'allowed': ['Homo Sapiens', 'Mouse', 'Mus Musculus']
   },
   'phenotype': {
     'type': 'string',
