@@ -47,6 +47,6 @@ def valid_material_params():
     "supplier_name": "my supplier name 1",
     "donor_id": "my donor id 1",
     "gender": "female",
-    "common_name": "Homo Sapiens",
+    "scientific_name": "Homo Sapiens",
     "phenotype": "eye colour"
   }

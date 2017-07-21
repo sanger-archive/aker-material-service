@@ -94,14 +94,14 @@ class TestMaterials(ServiceTestBase):
         self.assertValidationErrorStatus(status)
         self.assertValidationError(r, { 'gender': 'unallowed value invalid'})
 
-    def test_common_name_required_validation(self):
+    def test_scientific_name_required_validation(self):
         data = valid_material_params()
-        del data['common_name']
+        del data['scientific_name']
 
         r, status = self.post('/materials', data=data)
 
         self.assertValidationErrorStatus(status)
-        self.assertValidationError(r, { 'common_name': 'required field'})
+        self.assertValidationError(r, { 'scientific_name': 'required field'})
 
     def test_phenotype_required_validation(self):
         data = valid_material_params()
