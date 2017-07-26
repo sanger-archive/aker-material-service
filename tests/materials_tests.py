@@ -214,3 +214,53 @@ class TestMaterials(ServiceTestBase):
         r, status = self.post('/materials', data=data, headers=[('X-Authorisation', 'jibberish.jwt.rubbish')])
         self.assert401(status)
 
+    def test_verify_ownership_422_missing_owner_id(self):
+        materials_data = utils.merge_dict(valid_material_params(), { 'owner_id': 'abc' })
+        r, _ = self.post('/materials', data=materials_data)
+
+        data = { 'materials': [r['_id']] }
+
+        r, status = self.post('/materials/verify_ownership', data=data)
+        self.assert422(status)
+
+    def test_verify_ownership_422_missing_materials(self):
+        data = { 'owner_id': 'cs24@sanger.ac.uk' }
+
+        r, status = self.post('/materials/verify_ownership', data=data)
+        self.assert422(status)
+
+    def test_verify_ownership_422_empty_materials(self):
+        data = { 'owner_id': 'cs24@sanger.ac.uk', 'materials': [] }
+
+        r, status = self.post('/materials/verify_ownership', data=data)
+        self.assert422(status)
+
+    def test_verify_ownership_materials_belong_to_owner_id(self):
+        materials_data = utils.merge_dict(valid_material_params(), { 'owner_id': 'abc' })
+
+        r1, _ = self.post('/materials', data=materials_data)
+        r2, _ = self.post('/materials', data=materials_data)
+        r3, _ = self.post('/materials', data=materials_data)
+
+        data = { 'owner_id': 'abc', 'materials': [r1['_id'], r2['_id'], r3['_id']] }
+
+        r, status = self.post('/materials/verify_ownership', data=data)
+        self.assert200(status)
+
+    def test_verify_ownership_materials_dont_belong_to_ownerid(self):
+        abc_materials_data = utils.merge_dict(valid_material_params(), { 'owner_id': 'abc' })
+        xyz_materials_data = utils.merge_dict(valid_material_params(), { 'owner_id': 'xyz' })
+
+        r1, _ = self.post('/materials', data=abc_materials_data)
+        r2, _ = self.post('/materials', data=abc_materials_data)
+        r3, _ = self.post('/materials', data=xyz_materials_data)
+
+        abc_materials = [r1['_id'], r2['_id']]
+        xyz_materials = [r3['_id']]
+
+        data = { 'owner_id': 'xyz', 'materials': abc_materials + xyz_materials }
+
+        r, status = self.post('/materials/verify_ownership', data=data)
+
+        self.assert403(status)
+        self.assertEqual(len(r['_issues']), 2)

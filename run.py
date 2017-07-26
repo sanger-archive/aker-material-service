@@ -20,6 +20,7 @@ from pymongo import ReturnDocument
 from addresser import Addresser
 from flask_login import LoginManager, current_user
 from jwt_auth import JWTAuth
+from user import User
 
 environment = os.getenv('EVE_ENV', 'development')
 
@@ -50,6 +51,7 @@ def create_app(settings):
 
   @login_manager.user_loader
   def load_user(email):
+    print email
     return User(email)
 
   # Application hooks
@@ -100,19 +102,53 @@ def create_app(settings):
     if not 'materials' in request.json:
       abort(422)
 
-    validation_set = set(request.json['materials'])
+    if (validate_existence(request.json['materials'])):
+      return "ok"
+    else:
+      return "not ok - " + str(diff_len) + " materials not found"
+
+  def validate_existence(materials):
+    validation_set = set(materials)
     result_set = set()
 
-    for material in app.data.driver.db.materials.find({'_id': { '$in': request.json['materials'] } }, { '_id': 1}):
+    for material in app.data.driver.db.materials.find({'_id': { '$in': materials } }, { '_id': 1}):
       result_set.add(material['_id'])
 
     difference = validation_set - result_set
     diff_len = len(difference)
 
-    if (diff_len == 0):
-      return "ok"
-    else:
-      return "not ok - " + str(diff_len) + " materials not found"
+    return diff_len == 0
+
+  @app.route('/materials/verify_ownership', methods=['POST'])
+  def verify_ownership(**lookup):
+    materials = request.json.get('materials')
+    owner_id = request.json.get('owner_id')
+
+    if materials is None or len(materials) is 0 or owner_id is None:
+      abort(422)
+
+    if not validate_existence(materials):
+      abort(422, description="There was at least one material that did not exist")
+
+    find_args = {
+      '$and': [
+        { '_id': { '$in': materials } },
+        { 'owner_id': { '$ne': owner_id }}
+      ]
+    }
+
+    materials_cursor = app.data.driver.db.materials.find(find_args)
+
+    if materials_cursor.count() > 0:
+      response_body = json.dumps({
+        "_status": "ERR",
+        "_error": "{0} material(s) do not belong to {1}".format(materials_cursor.count(), owner_id),
+        "_issues": [material['_id'] for material in list(materials_cursor)]
+      })
+
+      return (Response(status=403, response=response_body, mimetype="application/json"))
+
+    return (Response(status=200, mimetype="application/json"))
 
   def cerberus_to_json_list_required(schema):
     return [key for key, value in schema.iteritems() if value.get('required')]
