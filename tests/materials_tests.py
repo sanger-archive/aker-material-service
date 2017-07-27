@@ -233,7 +233,7 @@ class TestMaterials(ServiceTestBase):
         data = { 'owner_id': 'cs24@sanger.ac.uk', 'materials': [] }
 
         r, status = self.post('/materials/verify_ownership', data=data)
-        self.assert422(status)
+        self.assert200(status)
 
     def test_verify_ownership_materials_belong_to_owner_id(self):
         materials_data = utils.merge_dict(valid_material_params(), { 'owner_id': 'abc' })

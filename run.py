@@ -123,8 +123,12 @@ def create_app(settings):
     materials = request.json.get('materials')
     owner_id = request.json.get('owner_id')
 
-    if not materials or not owner_id:
+    if materials is None or not owner_id:
       abort(422)
+
+    if len(materials)==0:
+      # If materials is an empty list, then the check is logically successful
+      return Response(status=200, mimetype="application/json")
 
     if not validate_existence(materials):
       abort(422, description="There was at least one material that did not exist")
@@ -145,9 +149,9 @@ def create_app(settings):
         "_issues": [material['_id'] for material in materials_cursor]
       })
 
-      return (Response(status=403, response=response_body, mimetype="application/json"))
+      return Response(status=403, response=response_body, mimetype="application/json")
 
-    return (Response(status=200, mimetype="application/json"))
+    return Response(status=200, mimetype="application/json")
 
   def cerberus_to_json_list_required(schema):
     return [key for key, value in schema.iteritems() if value.get('required')]
