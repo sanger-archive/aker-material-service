@@ -142,7 +142,7 @@ def create_app(settings):
       response_body = json.dumps({
         "_status": "ERR",
         "_error": "{0} material(s) do not belong to {1}".format(materials_cursor.count(), owner_id),
-        "_issues": [material['_id'] for material in list(materials_cursor)]
+        "_issues": [material['_id'] for material in materials_cursor]
       })
 
       return (Response(status=403, response=response_body, mimetype="application/json"))
