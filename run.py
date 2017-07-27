@@ -99,13 +99,13 @@ def create_app(settings):
   # Very rudimentary validation method... just for development!
   @app.route('/materials/validate', methods=['POST'])
   def validate(**lookup):
-    if not 'materials' in request.json:
+    if 'materials' not in request.json:
       abort(422)
 
     if (validate_existence(request.json['materials'])):
       return "ok"
     else:
-      return "not ok - " + str(diff_len) + " materials not found"
+      return "not ok - some materials not found"
 
   def validate_existence(materials):
     validation_set = set(materials)
@@ -115,16 +115,15 @@ def create_app(settings):
       result_set.add(material['_id'])
 
     difference = validation_set - result_set
-    diff_len = len(difference)
 
-    return diff_len == 0
+    return not difference
 
   @app.route('/materials/verify_ownership', methods=['POST'])
   def verify_ownership(**lookup):
     materials = request.json.get('materials')
     owner_id = request.json.get('owner_id')
 
-    if materials is None or len(materials) is 0 or owner_id is None:
+    if not materials or not owner_id:
       abort(422)
 
     if not validate_existence(materials):
