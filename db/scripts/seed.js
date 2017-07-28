@@ -29,7 +29,7 @@ while(index < documentNumber) {
         supplier_name: 'Supplier Name ' + index,
         donor_id: 'Donor ID ' + index,
         gender: chooseRandom(genders),
-        common_name: 'Common Name ' + index,
+        scientific_name: 'Scientific Name ' + index,
         phenotype: 'Phenotype ' + (Math.round(index / 100) * 100),
         date_of_receipt: date_of_receipt,
         meta: {
