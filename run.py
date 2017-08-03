@@ -221,25 +221,35 @@ def create_app(settings):
         schema_str = json.dumps(schema_obj, default=json_util.default)
         return Response(response=schema_str, status=200, mimetype="application/json")
 
-    @app.route('/materials/bulk_get', methods=['POST'])
-    def bulk_get(**lookup):
-        if not 'materials' in request.json:
-            abort(422)
+    def _bulk_find(resource, query):
+        items = []
 
-        materials = []
+        for item in app.data.driver.db[resource].find(query):
+            items.append(item)
 
-        for material in app.data.driver.db.materials.find({'_id': { '$in': request.json['materials'] } }):
-            materials.append(material)
+        msg = {}
+        msg['_items'] = items
 
-        materials = json.dumps(materials, default=json_util.default)
+        msg_json = json.dumps(msg, default=json_util.default)
 
-        resp = Response(response=materials,
+        resp = Response(response=msg_json,
                 status=200,
                 mimetype="application/json")
 
-        return (resp)
+        return (resp)        
+
+    @app.route('/materials/search', methods=['POST'])
+    def bulk_find_materials(**lookup):
+        return _bulk_find('materials', request.json['where'])
+
+    @app.route('/containers/search', methods=['POST'])
+    def bulk_find_containers(**lookup):
+        return _bulk_find('containers', request.json['where'])
+
 
     return app
+
+
 
 # enable logging to 'app.log' file
 log_handlers = [
