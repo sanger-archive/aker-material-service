@@ -580,6 +580,18 @@ class TestContainers(ServiceTestBase):
     # Some variations of this test fell foul of https://github.com/pyeve/eve/issues/920
     # -- a bug about patch requests raising a 412
 
+  def test_bulk_search_containers(self):
+    data = valid_container_params()
+    response, status = self.post('/containers', data=data)
+
+    plateid = response['_id']
+
+    r, status = self.post('/containers/search', data={'where': {'_id': {'$in': [plateid]}}})
+
+    self.assert200(status)
+    self.assertEqual(len(r['_items']), 1)
+
+
 # helper
 
 def valid_container_params(changes=None):

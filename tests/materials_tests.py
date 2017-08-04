@@ -264,3 +264,19 @@ class TestMaterials(ServiceTestBase):
 
         self.assert403(status)
         self.assertEqual(len(r['_issues']), 2)
+
+    def test_bulk_search_materials(self):
+        query = { 'owner_id': 'abc'}
+        query_empty = { 'owner_id': 'xyz'}
+        abc_materials_data = utils.merge_dict(valid_material_params(), query)
+        r1, _ = self.post('/materials', data=abc_materials_data)
+
+        r, status = self.post('/materials/search', data={'where': query})
+
+        self.assert200(status)
+        self.assertEqual(len(r['_items']), 1)
+
+        r, status = self.post('/materials/search', data={'where': query_empty})
+
+        self.assert200(status)
+        self.assertEqual(len(r['_items']), 0)        
