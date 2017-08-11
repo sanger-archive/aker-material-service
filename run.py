@@ -222,21 +222,15 @@ def create_app(settings):
         return Response(response=schema_str, status=200, mimetype="application/json")
 
     def _bulk_find(resource, query):
-        items = []
+        items = list(app.data.driver.db[resource].find(query))
 
-        for item in app.data.driver.db[resource].find(query):
-            items.append(item)
-
-        msg = {}
-        msg['_items'] = items
+        msg = { '_items': items }
 
         msg_json = json.dumps(msg, default=json_util.default)
 
-        resp = Response(response=msg_json,
-                status=200,
-                mimetype="application/json")
-
-        return (resp)        
+        return Response(response=msg_json,
+                        status=200,
+                        mimetype="application/json")
 
     @app.route('/materials/search', methods=['POST'])
     def bulk_find_materials(**lookup):
@@ -246,9 +240,7 @@ def create_app(settings):
     def bulk_find_containers(**lookup):
         return _bulk_find('containers', request.json['where'])
 
-
     return app
-
 
 
 # enable logging to 'app.log' file
