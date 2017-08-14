@@ -51,7 +51,7 @@ material_schema = {
   'scientific_name': {
     'type': 'string',
     'required': True,
-    'allowed': ['Homo Sapiens', 'Mouse', 'Mus Musculus']
+    'allowed': ['Homo sapiens', 'Mus musculus']
   },
   'phenotype': {
     'type': 'string',
