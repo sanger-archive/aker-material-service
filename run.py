@@ -221,8 +221,8 @@ def create_app(settings):
         schema_str = json.dumps(schema_obj, default=json_util.default)
         return Response(response=schema_str, status=200, mimetype="application/json")
 
-    def _bulk_find(resource, query):
-        items = list(app.data.driver.db[resource].find(query))
+    def _bulk_find(resource, query_json):
+        items = list(app.data.driver.db[resource].find(filter=query_json.get('where'), projection=query_json.get('projection')))
 
         msg = { '_items': items }
 
@@ -234,11 +234,11 @@ def create_app(settings):
 
     @app.route('/materials/search', methods=['POST'])
     def bulk_find_materials(**lookup):
-        return _bulk_find('materials', request.json['where'])
+        return _bulk_find('materials', request.json)
 
     @app.route('/containers/search', methods=['POST'])
     def bulk_find_containers(**lookup):
-        return _bulk_find('containers', request.json['where'])
+        return _bulk_find('containers', request.json)
 
     return app
 
