@@ -153,8 +153,8 @@ def create_app(settings):
 
         return Response(status=200, mimetype="application/json")
 
-    def cerberus_to_json_list_required(schema):
-        return [key for key, value in schema.iteritems() if value.get('required')]
+    def cerberus_to_json_list(schema, quality):
+        return [key for key, value in schema.iteritems() if value.get(quality)]
 
     def cerberus_to_json_change_type_for_datetime(schema):
         for value in schema.itervalues():
@@ -194,10 +194,11 @@ def create_app(settings):
         if patch:
             cerberus_to_json_only_id_is_required(schema)
         cerberus_to_json_change_allowed_with_one_of(schema)
-        required = cerberus_to_json_list_required(schema)
+        required = cerberus_to_json_list(schema, 'required')
+        searchable = cerberus_to_json_list(schema, 'searchable')
         amend_required_order(required)
 
-        return {'type': 'object', 'properties': schema, 'required': required}
+        return {'type': 'object', 'properties': schema, 'required': required, 'searchable': searchable}
 
     @app.route('/containers/json_schema', methods=['GET'])
     def containers_json_schema(**lookup):
