@@ -69,6 +69,9 @@ class CustomValidator(Validator):
         if required_with_hmdmc and self.document.get('hmdmc') and not value:
             self._error(field, "The %s field must be specified if an hmdmc is given."%field)
 
+    def _validate_searchable(self, searchable, field, value):
+        pass
+
     def validate_immutable_field(self, field, data, existing):
         if (existing and data and field in data and field in existing
                 and data[field]!=existing[field]):

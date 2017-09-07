@@ -28,37 +28,45 @@ material_schema = {
   },
   'material_type': {
     'type': 'string',
+    'searchable': True,
     'allowed': ['blood', 'dna']
   },
   'available': {
     'type': 'boolean',
     'required': False,
+    'searchable': True,
     'default': False
   },
   'supplier_name': {
     'type': 'string',
+    'searchable': True,
     'required': True
   },
   'donor_id': {
     'type': 'string',
+    'searchable': True,
     'required': True
   },
   'gender': {
     'type': 'string',
+    'searchable': True,
     'allowed': ['male', 'female', 'unknown'],
     'required': True
   },
   'scientific_name': {
     'type': 'string',
+    'searchable': True,
     'required': True,
     'allowed': ['Homo sapiens', 'Mus musculus']
   },
   'phenotype': {
     'type': 'string',
+    'searchable': True,
     'required': True,
   },
   'hmdmc': {
     'type': 'string',
+    'searchable': True,
     'required': False,
     'hmdmc_format': True,
   },
@@ -74,10 +82,12 @@ material_schema = {
     'not_blank': True,
   },
   'date_of_receipt': {
+    'searchable': True,
     'type': 'datetime',
   },
   'owner_id': {
-    'type': 'string'
+    'searchable': True,
+    'type': 'string',
   },
   'meta': {
     'type': 'dict',

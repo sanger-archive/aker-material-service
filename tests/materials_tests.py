@@ -1,5 +1,6 @@
 import utils
 import jwt
+import uuid
 
 from tests import ServiceTestBase, valid_material_params
 
@@ -29,8 +30,6 @@ class TestMaterials(ServiceTestBase):
         self.assertRegexpMatches(r['_id'], '[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}')
 
     def test_material_with_wrong_parents_not_created(self):
-        import uuid
-
         r1, status1 = self.post(self.domain['materials']['url'], valid_material_params())
         self.assert201(status1)
 
@@ -279,4 +278,10 @@ class TestMaterials(ServiceTestBase):
         r, status = self.post('/materials/search', data={'where': query_empty})
 
         self.assert200(status)
-        self.assertEqual(len(r['_items']), 0)        
+        self.assertEqual(len(r['_items']), 0)
+
+    def test_searchable_fields(self):
+        response, status = self.get('materials/json_schema')
+        self.assert200(status)
+        expected_searchable = [k for k,v in response['properties'].iteritems() if v.get('searchable')]
+        self.assertEqual(response['searchable'], expected_searchable)
