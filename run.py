@@ -248,10 +248,13 @@ def create_app(settings):
 
         meta = { 'max_results': limit, 'total': total, 'page': page }
 
-        links = {
-            'next': { 'page': (page+1) if page < pages else None },
-            'prev': { 'page': (page-1) if page > 1 else None },
-        }
+        links = {}
+        if page < pages:
+            links['next'] = { 'page': (page+1) }
+        if page > 1:
+            links['prev'] = { 'page': (page-1) }
+        if page < pages:
+            links['last'] = { 'page': pages }
 
         msg = { '_items': items, '_meta': meta, '_links': links }
 
