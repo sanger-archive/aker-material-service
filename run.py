@@ -222,10 +222,38 @@ def create_app(settings):
         schema_str = json.dumps(schema_obj, default=json_util.default)
         return Response(response=schema_str, status=200, mimetype="application/json")
 
-    def _bulk_find(resource, query_json):
-        items = list(app.data.driver.db[resource].find(filter=query_json.get('where'), projection=query_json.get('projection')))
+    def _bulk_find(resource, args):
+        find_args = {
+          'filter': args.get('where'),
+          'projection': args.get('projection'),
+        }
+        try:
+            limit = max(int(args['max_results']), 0)
+        except (ValueError, KeyError):
+            limit = 0
+        if limit:
+            find_args['limit'] = limit
 
-        msg = { '_items': items }
+        try:
+            page = max(int(args['page']), 1)
+        except (ValueError, KeyError):
+            page = 1
+        if limit and page>1:
+            find_args['skip'] = limit*(page-1)
+
+        cursor = app.data.driver.db[resource].find(**find_args)
+        total = cursor.count()
+        pages = ((total + limit-1) // limit) if limit else 1
+        items = list(cursor)
+
+        meta = { 'max_results': limit, 'total': total, 'page': page }
+
+        links = {
+            'next': { 'page': (page+1) if page < pages else None },
+            'prev': { 'page': (page-1) if page > 1 else None },
+        }
+
+        msg = { '_items': items, '_meta': meta, '_links': links }
 
         msg_json = json.dumps(msg, default=json_util.default)
 
