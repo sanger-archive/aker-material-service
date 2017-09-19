@@ -21,6 +21,7 @@ from addresser import Addresser
 from flask_login import LoginManager, current_user
 from jwt_auth import JWTAuth
 from user import User
+from datetime import datetime
 
 environment = os.getenv('EVE_ENV', 'development')
 
@@ -223,6 +224,7 @@ def create_app(settings):
         return Response(response=schema_str, status=200, mimetype="application/json")
 
     def _bulk_find(resource, args):
+
         find_args = {
           'filter': args.get('where'),
           'projection': args.get('projection'),
@@ -254,6 +256,14 @@ def create_app(settings):
         if page < pages:
             links['next'] = { 'page': (page+1) }
             links['last'] = { 'page': pages }
+
+        for item in items:
+            for k, v in item.items():
+                if isinstance(v, datetime):
+                    formatted_date = '{:%m/%d/%Y}'.format(v)
+                    item[k] = formatted_date
+                if isinstance(v, unicode):
+                    item[k] = str(v)
 
         msg = { '_items': items, '_meta': meta, '_links': links }
 
