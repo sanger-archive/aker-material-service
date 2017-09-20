@@ -22,6 +22,7 @@ from flask_login import LoginManager, current_user
 from jwt_auth import JWTAuth
 from user import User
 from datetime import datetime
+from eve.utils import date_to_str
 
 environment = os.getenv('EVE_ENV', 'development')
 
@@ -260,7 +261,8 @@ def create_app(settings):
         for item in items:
             for k, v in item.items():
                 if isinstance(v, datetime):
-                    formatted_date = v.strftime("%a, %d %b %Y %H:%M:%S")
+                    # date_to_str converts a datetime value to the format defined in the configuration file
+                    formatted_date = date_to_str(v)
                     item[k] = formatted_date
                 if isinstance(v, unicode):
                     item[k] = str(v)
