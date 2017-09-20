@@ -260,7 +260,7 @@ def create_app(settings):
         for item in items:
             for k, v in item.items():
                 if isinstance(v, datetime):
-                    formatted_date = '{:%m/%d/%Y}'.format(v)
+                    formatted_date = v.strftime("%a, %d %b %Y %H:%M:%S")
                     item[k] = formatted_date
                 if isinstance(v, unicode):
                     item[k] = str(v)
