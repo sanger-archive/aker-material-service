@@ -22,7 +22,7 @@ from flask_login import LoginManager, current_user
 from jwt_auth import JWTAuth
 from user import User
 from datetime import datetime
-from eve.utils import date_to_str
+from eve.utils import date_to_str, str_to_date
 
 environment = os.getenv('EVE_ENV', 'development')
 
@@ -224,10 +224,25 @@ def create_app(settings):
         schema_str = json.dumps(schema_obj, default=json_util.default)
         return Response(response=schema_str, status=200, mimetype="application/json")
 
+    def process_where(where, in_date_value=False):
+        if not where:
+            return where
+        if isinstance(where, dict):
+            for k,v in where.iteritems():
+                where[k] = process_where(v, in_date_value or k=='date_of_receipt')
+        elif isinstance(where, (list, tuple)):
+            return [process_where(x, in_date_value) for x in where]
+        elif in_date_value and isinstance(where, basestring):
+            try:
+                return str_to_date(where)
+            except ValueError:
+                return where
+        return where
+
     def _bulk_find(resource, args):
 
         find_args = {
-          'filter': args.get('where'),
+          'filter': process_where(args.get('where')),
           'projection': args.get('projection'),
         }
         try:
@@ -259,11 +274,10 @@ def create_app(settings):
             links['last'] = { 'page': pages }
 
         for item in items:
-            for k, v in item.items():
+            for k, v in item.iteritems():
                 if isinstance(v, datetime):
                     # date_to_str converts a datetime value to the format defined in the configuration file
-                    formatted_date = date_to_str(v)
-                    item[k] = formatted_date
+                    item[k] = date_to_str(v)
                 if isinstance(v, unicode):
                     item[k] = str(v)
 
