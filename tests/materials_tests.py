@@ -4,6 +4,7 @@ import uuid
 
 from tests import ServiceTestBase, valid_material_params
 
+
 # Using the same test framework that Eve itself uses:
 # https://github.com/nicolaiarocci/eve/blob/develop/eve/tests/__init__.py
 class TestMaterials(ServiceTestBase):
@@ -14,7 +15,6 @@ class TestMaterials(ServiceTestBase):
         self.assert201(status)
 
         self.assertRegexpMatches(r['_id'], '[a-f0-9]{8}-?[a-f0-9]{4}-?4[a-f0-9]{3}-?[89ab][a-f0-9]{3}-?[a-f0-9]{12}')
-
 
     def test_material_with_parents_creation(self):
         r1, status1 = self.post(self.domain['materials']['url'], valid_material_params())
@@ -38,7 +38,6 @@ class TestMaterials(ServiceTestBase):
         r, status = self.post(self.domain['materials']['url'], params)
         self.assert422(status)
 
-
     def test_get_empty_resource(self):
         response, status = self.get('materials')
         self.assert200(status)
@@ -51,12 +50,12 @@ class TestMaterials(ServiceTestBase):
         self.assertHomeLink(links)
 
     def test_material_type_required_validation(self):
-        data = utils.merge_dict(valid_material_params(), { 'material_type': 'saliva' })
+        data = utils.merge_dict(valid_material_params(), {'material_type': 'saliva'})
 
         r, status = self.post('/materials', data=data)
 
         self.assertValidationErrorStatus(status)
-        self.assertValidationError(r, { 'material_type': 'unallowed value saliva'})
+        self.assertValidationError(r, {'material_type': 'unallowed value saliva'})
 
     def test_supplier_name_required_validation(self):
         data = valid_material_params()
@@ -65,7 +64,7 @@ class TestMaterials(ServiceTestBase):
         r, status = self.post('/materials', data=data)
 
         self.assertValidationErrorStatus(status)
-        self.assertValidationError(r, { 'supplier_name': 'required field'})
+        self.assertValidationError(r, {'supplier_name': 'required field'})
 
     def test_donor_id_required_validation(self):
         data = valid_material_params()
@@ -74,7 +73,7 @@ class TestMaterials(ServiceTestBase):
         r, status = self.post('/materials', data=data)
 
         self.assertValidationErrorStatus(status)
-        self.assertValidationError(r, { 'donor_id': 'required field'})
+        self.assertValidationError(r, {'donor_id': 'required field'})
 
     def test_gender_required_validation(self):
         data = valid_material_params()
@@ -83,15 +82,15 @@ class TestMaterials(ServiceTestBase):
         r, status = self.post('/materials', data=data)
 
         self.assertValidationErrorStatus(status)
-        self.assertValidationError(r, { 'gender': 'required field'})
+        self.assertValidationError(r, {'gender': 'required field'})
 
     def test_gender_allowed_validation(self):
-        data = utils.merge_dict(valid_material_params(), { 'gender': 'invalid' })
+        data = utils.merge_dict(valid_material_params(), {'gender': 'invalid'})
 
         r, status = self.post('/materials', data=data)
 
         self.assertValidationErrorStatus(status)
-        self.assertValidationError(r, { 'gender': 'unallowed value invalid'})
+        self.assertValidationError(r, {'gender': 'unallowed value invalid'})
 
     def test_scientific_name_required_validation(self):
         data = valid_material_params()
@@ -100,7 +99,7 @@ class TestMaterials(ServiceTestBase):
         r, status = self.post('/materials', data=data)
 
         self.assertValidationErrorStatus(status)
-        self.assertValidationError(r, { 'scientific_name': 'required field'})
+        self.assertValidationError(r, {'scientific_name': 'required field'})
 
     def test_phenotype_required_validation(self):
         data = valid_material_params()
@@ -109,7 +108,7 @@ class TestMaterials(ServiceTestBase):
         r, status = self.post('/materials', data=data)
 
         self.assertValidationErrorStatus(status)
-        self.assertValidationError(r, { 'phenotype': 'required field'})
+        self.assertValidationError(r, {'phenotype': 'required field'})
 
     def test_hmdmc_invalid_format(self):
         data = valid_material_params()
@@ -130,7 +129,6 @@ class TestMaterials(ServiceTestBase):
 
         self.assertValidationErrorStatus(status)
         self.assertValidationError(r, {'hmdmc': 'format'})
-
 
     def test_hmdmc_missing_set_by(self):
         data = valid_material_params()
@@ -164,7 +162,7 @@ class TestMaterials(ServiceTestBase):
 
     def test_hmdmc_not_required_confirmed_by_blank(self):
         data = valid_material_params()
-        data['hmdmc_not_required_confirmed_by']=''
+        data['hmdmc_not_required_confirmed_by'] = ''
         r, status = self.post('/materials', data=data)
         self.assertValidationErrorStatus(status)
         self.assertValidationError(r, {'hmdmc_not_required_confirmed_by': 'blank'})
@@ -173,13 +171,13 @@ class TestMaterials(ServiceTestBase):
         data = valid_material_params()
         r1, status = self.post('/materials', data=data)
         self.assert201(status)
-        self.assertEqual(r1['available'], False) # should be False, not None
-        r2, status = self.patch('/materials/'+r1['_id'], data={ 'available': True })
+        self.assertEqual(r1['available'], False)  # should be False, not None
+        r2, status = self.patch('/materials/'+r1['_id'], data={'available': True})
         self.assert200(status)
         self.assertEqual(r2['available'], True)
 
     def test_meta_allows_unknown(self):
-        data = utils.merge_dict(valid_material_params(), { 'meta': { 'allows': 'unknown' } })
+        data = utils.merge_dict(valid_material_params(), {'meta': {'allows': 'unknown'}})
 
         r, status = self.post('/materials', data=data)
         self.assert201(status)
@@ -188,7 +186,7 @@ class TestMaterials(ServiceTestBase):
         self.assertEqual(r['meta']['allows'], 'unknown')
 
     def test_owner_id_is_user_when_valid_jwt(self):
-        payload = {'data': { 'email': 'user@here.com', 'groups': ['pirates'] }}
+        payload = {'data': {'email': 'user@here.com', 'groups': ['pirates']}}
         auth_token = jwt.encode(payload, 'test', algorithm='HS256')
         data = valid_material_params()
 
@@ -214,41 +212,41 @@ class TestMaterials(ServiceTestBase):
         self.assert401(status)
 
     def test_verify_ownership_422_missing_owner_id(self):
-        materials_data = utils.merge_dict(valid_material_params(), { 'owner_id': 'abc' })
+        materials_data = utils.merge_dict(valid_material_params(), {'owner_id': 'abc'})
         r, _ = self.post('/materials', data=materials_data)
 
-        data = { 'materials': [r['_id']] }
+        data = {'materials': [r['_id']]}
 
         r, status = self.post('/materials/verify_ownership', data=data)
         self.assert422(status)
 
     def test_verify_ownership_422_missing_materials(self):
-        data = { 'owner_id': 'cs24@sanger.ac.uk' }
+        data = {'owner_id': 'cs24@sanger.ac.uk'}
 
         r, status = self.post('/materials/verify_ownership', data=data)
         self.assert422(status)
 
     def test_verify_ownership_422_empty_materials(self):
-        data = { 'owner_id': 'cs24@sanger.ac.uk', 'materials': [] }
+        data = {'owner_id': 'cs24@sanger.ac.uk', 'materials': []}
 
         r, status = self.post('/materials/verify_ownership', data=data)
         self.assert200(status)
 
     def test_verify_ownership_materials_belong_to_owner_id(self):
-        materials_data = utils.merge_dict(valid_material_params(), { 'owner_id': 'abc' })
+        materials_data = utils.merge_dict(valid_material_params(), {'owner_id': 'abc'})
 
         r1, _ = self.post('/materials', data=materials_data)
         r2, _ = self.post('/materials', data=materials_data)
         r3, _ = self.post('/materials', data=materials_data)
 
-        data = { 'owner_id': 'abc', 'materials': [r1['_id'], r2['_id'], r3['_id']] }
+        data = {'owner_id': 'abc', 'materials': [r1['_id'], r2['_id'], r3['_id']]}
 
         r, status = self.post('/materials/verify_ownership', data=data)
         self.assert200(status)
 
     def test_verify_ownership_materials_dont_belong_to_ownerid(self):
-        abc_materials_data = utils.merge_dict(valid_material_params(), { 'owner_id': 'abc' })
-        xyz_materials_data = utils.merge_dict(valid_material_params(), { 'owner_id': 'xyz' })
+        abc_materials_data = utils.merge_dict(valid_material_params(), {'owner_id': 'abc'})
+        xyz_materials_data = utils.merge_dict(valid_material_params(), {'owner_id': 'xyz'})
 
         r1, _ = self.post('/materials', data=abc_materials_data)
         r2, _ = self.post('/materials', data=abc_materials_data)
@@ -257,7 +255,7 @@ class TestMaterials(ServiceTestBase):
         abc_materials = [r1['_id'], r2['_id']]
         xyz_materials = [r3['_id']]
 
-        data = { 'owner_id': 'xyz', 'materials': abc_materials + xyz_materials }
+        data = {'owner_id': 'xyz', 'materials': abc_materials + xyz_materials}
 
         r, status = self.post('/materials/verify_ownership', data=data)
 
@@ -265,8 +263,8 @@ class TestMaterials(ServiceTestBase):
         self.assertEqual(len(r['_issues']), 2)
 
     def test_bulk_search_materials(self):
-        query = { 'owner_id': 'abc'}
-        query_empty = { 'owner_id': 'xyz'}
+        query = {'owner_id': 'abc'}
+        query_empty = {'owner_id': 'xyz'}
         abc_materials_data = utils.merge_dict(valid_material_params(), query)
         r1, _ = self.post('/materials', data=abc_materials_data)
 
@@ -283,5 +281,60 @@ class TestMaterials(ServiceTestBase):
     def test_searchable_fields(self):
         response, status = self.get('materials/json_schema')
         self.assert200(status)
-        expected_searchable = [k for k,v in response['properties'].iteritems() if v.get('searchable')]
+        expected_searchable = [k for k, v in response['properties'].iteritems() if v.get('searchable')]
         self.assertEqual(response['searchable'], expected_searchable)
+
+    def test_friendly_names(self):
+        """Test that the friendly names we assign to the fields are correct"""
+        response, status = self.get('materials/json_schema')
+        self.assert200(status)
+
+        friendly_names = {
+            k: v.get('friendly_name')
+            for k, v in response['properties'].iteritems() if v.get('friendly_name')}
+
+        self.assertEqual(friendly_names['scientific_name'], 'Scientific name')
+        self.assertEqual(friendly_names['gender'], 'Gender')
+        self.assertEqual(friendly_names['donor_id'], 'Donor ID')
+        self.assertEqual(friendly_names['phenotype'], 'Phenotype')
+        self.assertEqual(friendly_names['supplier_name'], 'Supplier name')
+
+    def test_regex(self):
+        """Test that the regular expresssions works as expected"""
+        response, status = self.get('materials/json_schema')
+        self.assert200(status)
+
+        field_name_regexs = {
+            k: v.get('field_name_regex')
+            for k, v in response['properties'].iteritems() if v.get('field_name_regex')}
+
+        self.assertNotRegexpMatches('scientifi', field_name_regexs['scientific_name'])
+        self.assertRegexpMatches('scientific', field_name_regexs['scientific_name'])
+        self.assertRegexpMatches('scientific  name', field_name_regexs['scientific_name'])
+        self.assertRegexpMatches('scientific-name', field_name_regexs['scientific_name'])
+        self.assertRegexpMatches('scientific name', field_name_regexs['scientific_name'])
+        self.assertRegexpMatches('scientific_name', field_name_regexs['scientific_name'])
+        self.assertRegexpMatches('scientificname', field_name_regexs['scientific_name'])
+
+        self.assertNotRegexpMatches('gend', field_name_regexs['gender'])
+        self.assertNotRegexpMatches('se', field_name_regexs['gender'])
+        self.assertRegexpMatches('sex', field_name_regexs['gender'])
+        self.assertRegexpMatches('gender', field_name_regexs['gender'])
+
+        self.assertNotRegexpMatches('don', field_name_regexs['donor_id'])
+        self.assertNotRegexpMatches('donor_i', field_name_regexs['donor_id'])
+        self.assertRegexpMatches('donor id', field_name_regexs['donor_id'])
+        self.assertRegexpMatches('donor  id', field_name_regexs['donor_id'])
+        self.assertRegexpMatches('donor_id', field_name_regexs['donor_id'])
+        self.assertRegexpMatches('donor_id', field_name_regexs['donor_id'])
+
+        self.assertNotRegexpMatches('phenotyp', field_name_regexs['phenotype'])
+        self.assertNotRegexpMatches('pheno type', field_name_regexs['phenotype'])
+        self.assertRegexpMatches('phenotype', field_name_regexs['phenotype'])
+
+        self.assertNotRegexpMatches('supplier_nam', field_name_regexs['supplier_name'])
+        self.assertNotRegexpMatches('supplie', field_name_regexs['supplier_name'])
+        self.assertRegexpMatches('supplier', field_name_regexs['supplier_name'])
+        self.assertRegexpMatches('supplier_name', field_name_regexs['supplier_name'])
+        self.assertRegexpMatches('supplier name', field_name_regexs['supplier_name'])
+        self.assertRegexpMatches('supplier-name', field_name_regexs['supplier_name'])

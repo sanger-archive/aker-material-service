@@ -8,6 +8,7 @@ import pdb
 
 HMDMC_PATTERN = re.compile(r'^[0-9]{2}/[0-9]{3}$')
 
+
 class CustomValidator(Validator):
     """
     Extends the base mongo validator adding support for the uuid data-type
@@ -20,7 +21,8 @@ class CustomValidator(Validator):
 
     def make_addresser(self):
         doc = self.document
-        return Addresser(doc['num_of_rows'], doc['num_of_cols'],
+        return Addresser(
+                doc['num_of_rows'], doc['num_of_cols'],
                 bool(doc.get('row_is_alpha')), bool(doc.get('col_is_alpha')))
 
     def _validate_address(self, address, field, value):
@@ -39,13 +41,13 @@ class CustomValidator(Validator):
 
         for x, i in c.iteritems():
             if i > 1:
-                self._error(field, 'Address %s is a duplicate'%x)
+                self._error(field, 'Address %s is a duplicate' % x)
 
     def _validate_non_aker_barcode(self, non_aker_barcode, field, value):
         if not non_aker_barcode:
             return
         if self.is_new and value.upper().startswith('AKER-'):
-            self._error(field, 'AKER barcode not permitted: %s'%value)
+            self._error(field, 'AKER barcode not permitted: %s' % value)
 
     def _validate_row_alpha_range(self, row_alpha_range, field, value):
         if row_alpha_range and self.document.get('row_is_alpha') and value > 26:
@@ -57,7 +59,7 @@ class CustomValidator(Validator):
 
     def _validate_not_blank(self, not_blank, field, value):
         if not_blank and value is not None and not value.strip():
-            self._error(field, 'The %s field cannot be blank.'%field)
+            self._error(field, 'The %s field cannot be blank.' % field)
 
     def _validate_hmdmc_format(self, hmdmc_format, field, value):
         if hmdmc_format and value is not None and not HMDMC_PATTERN.match(value):
@@ -67,15 +69,21 @@ class CustomValidator(Validator):
 
     def _validate_required_with_hmdmc(self, required_with_hmdmc, field, value):
         if required_with_hmdmc and self.document.get('hmdmc') and not value:
-            self._error(field, "The %s field must be specified if an hmdmc is given."%field)
+            self._error(field, "The %s field must be specified if an hmdmc is given." % field)
 
     def _validate_searchable(self, searchable, field, value):
         pass
 
+    def _validate_friendly_name(self, friendly_name, field, value):
+        pass
+
+    def _validate_field_name_regex(self, friendly_name, field, value):
+        pass
+
     def validate_immutable_field(self, field, data, existing):
         if (existing and data and field in data and field in existing
-                and data[field]!=existing[field]):
-            self._error(field, 'The %s field cannot be updated.'%field)
+                and data[field] != existing[field]):
+            self._error(field, 'The %s field cannot be updated.' % field)
             return False
         return True
 
@@ -96,4 +104,3 @@ class CustomValidator(Validator):
             if not self.validate_immutable_field(field, document, original_document):
                 validated = False
         return validated
- 
