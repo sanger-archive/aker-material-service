@@ -326,7 +326,7 @@ class TestMaterials(ServiceTestBase):
         self.assertRegexpMatches('donor id', field_name_regexs['donor_id'])
         self.assertRegexpMatches('donor  id', field_name_regexs['donor_id'])
         self.assertRegexpMatches('donor_id', field_name_regexs['donor_id'])
-        self.assertRegexpMatches('donor_id', field_name_regexs['donor_id'])
+        self.assertRegexpMatches('donor-id', field_name_regexs['donor_id'])
 
         self.assertNotRegexpMatches('phenotyp', field_name_regexs['phenotype'])
         self.assertNotRegexpMatches('pheno type', field_name_regexs['phenotype'])
