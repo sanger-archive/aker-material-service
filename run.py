@@ -30,6 +30,7 @@ SETTINGS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'db', e
 SWAGGER_URL = '/docs'  # URL for exposing Swagger UI (without trailing '/')
 API_URL = '/api-docs'  # Our API url (can of course be a local resource)
 
+
 def create_app(settings):
     app = Eve(settings=settings, json_encoder=UUIDEncoder, validator=CustomValidator, auth=JWTAuth)
 
@@ -69,20 +70,22 @@ def create_app(settings):
             if 'barcode' not in container:
                 result = app.data.driver.db.counters.find_one_and_update(
                     {'_id': 'barcode'},
-                    {'$inc': { 'seq': 1 }},
+                    {'$inc': {'seq': 1}},
                     return_document=ReturnDocument.AFTER)
 
-                container['barcode'] = 'AKER-%s'%result['seq']
+                container['barcode'] = 'AKER-%s' % result['seq']
 
     def insert_empty_slots(containers):
         for container in containers:
-            addresser = Addresser(container['num_of_rows'], container['num_of_cols'],
-                                                     bool(container.get('row_is_alpha')), bool(container.get('col_is_alpha')))
+            addresser = Addresser(container['num_of_rows'],
+                                  container['num_of_cols'],
+                                  bool(container.get('row_is_alpha')),
+                                  bool(container.get('col_is_alpha')))
             slots = container.get('slots')
             if not slots:
-                container['slots'] = [{ 'address': address } for address in addresser]
+                container['slots'] = [{'address': address} for address in addresser]
             else:
-                definedaddresses = { slot['address'] for slot in container['slots'] }
+                definedaddresses = {slot['address'] for slot in container['slots']}
                 for address in addresser:
                     if address not in definedaddresses:
                         slots.append({'address': address})
@@ -113,7 +116,8 @@ def create_app(settings):
         validation_set = set(materials)
         result_set = set()
 
-        for material in app.data.driver.db.materials.find({'_id': { '$in': materials } }, { '_id': 1}):
+        for material in app.data.driver.db.materials.find(
+                {'_id': {'$in': materials}}, {'_id': 1}):
             result_set.add(material['_id'])
 
         difference = validation_set - result_set
@@ -128,8 +132,9 @@ def create_app(settings):
         if materials is None or not owner_id:
             abort(422)
 
-        if len(materials)==0:
-            # If materials is an empty list, then the check is logically successful
+        if len(materials) == 0:
+            # If materials is an empty list, then the check is logically
+            # successful
             return Response(status=200, mimetype="application/json")
 
         if not validate_existence(materials):
@@ -137,8 +142,8 @@ def create_app(settings):
 
         find_args = {
             '$and': [
-                { '_id': { '$in': materials } },
-                { 'owner_id': { '$ne': owner_id }}
+                {'_id': {'$in': materials}},
+                {'owner_id': {'$ne': owner_id}}
             ]
         }
 
@@ -176,13 +181,13 @@ def create_app(settings):
 
     def cerberus_to_json_only_id_is_required(schema):
         for key, value in schema.iteritems():
-            if key=='_id':
+            if key == '_id':
                 value['required'] = True
             elif value.get('required'):
                 value['required'] = False
 
     def amend_required_order(required):
-        if 'supplier_name' in required and required[0]!='supplier_name':
+        if 'supplier_name' in required and required[0] != 'supplier_name':
             required.remove('supplier_name')
             required.insert(0, 'supplier_name')
 
@@ -228,8 +233,8 @@ def create_app(settings):
         if not where:
             return where
         if isinstance(where, dict):
-            for k,v in where.iteritems():
-                where[k] = process_where(v, in_date_value or k=='date_of_receipt')
+            for k, v in where.iteritems():
+                where[k] = process_where(v, in_date_value or k == 'date_of_receipt')
         elif isinstance(where, (list, tuple)):
             return [process_where(x, in_date_value) for x in where]
         elif in_date_value and isinstance(where, basestring):
@@ -256,7 +261,7 @@ def create_app(settings):
             page = max(int(args['page']), 1)
         except (ValueError, KeyError):
             page = 1
-        if limit and page>1:
+        if limit and page > 1:
             find_args['skip'] = limit*(page-1)
 
         cursor = app.data.driver.db[resource].find(**find_args)
@@ -264,14 +269,14 @@ def create_app(settings):
         pages = ((total + limit-1) // limit) if limit else 1
         items = list(cursor)
 
-        meta = { 'max_results': limit, 'total': total, 'page': page }
+        meta = {'max_results': limit, 'total': total, 'page': page}
 
         links = {}
         if page > 1:
-            links['prev'] = { 'page': (page-1) }
+            links['prev'] = {'page': (page-1)}
         if page < pages:
-            links['next'] = { 'page': (page+1) }
-            links['last'] = { 'page': pages }
+            links['next'] = {'page': (page+1)}
+            links['last'] = {'page': pages}
 
         for item in items:
             for k, v in item.iteritems():
@@ -281,7 +286,7 @@ def create_app(settings):
                 if isinstance(v, unicode):
                     item[k] = str(v)
 
-        msg = { '_items': items, '_meta': meta, '_links': links }
+        msg = {'_items': items, '_meta': meta, '_links': links}
 
         msg_json = json.dumps(msg, default=json_util.default)
 
@@ -324,16 +329,19 @@ app.logger.setLevel(logging.INFO)
 for handler in log_handlers:
     app.logger.addHandler(handler)
 
+
 def log_request_start(resource, request, lookup=None):
-    message = "%s resource=%r, request=%r"%(request.method, resource, request)
+    message = "%s resource=%r, request=%r" % (request.method, resource, request)
     app.logger.info(message)
     app.logger.info("Request data:\n"+request.data)
 
+
 def log_request_end(resource, request, response):
-    message = "%s resource=%r, request=%r, response=%r"%(request.method, resource, request, response)
+    message = "%s resource=%r, request=%r, response=%r" % (request.method, resource, request, response)
     app.logger.info(message)
     if response:
         app.logger.debug("Response data:\n"+response.data)
+
 
 for method in 'GET POST PATCH PUT DELETE'.split():
     events = getattr(app, 'on_pre_'+method)
