@@ -40,29 +40,39 @@ material_schema = {
   'supplier_name': {
     'type': 'string',
     'searchable': True,
-    'required': True
+    'required': True,
+    'friendly_name': 'Supplier name',
+    'field_name_regex': '^supplier[-_\s]*(name)?$'
   },
   'donor_id': {
     'type': 'string',
     'searchable': True,
-    'required': True
+    'required': True,
+    'friendly_name': 'Donor ID',
+    'field_name_regex': '^donor[-_\s]*(id)?$'
   },
   'gender': {
     'type': 'string',
     'searchable': True,
     'allowed': ['male', 'female', 'unknown'],
-    'required': True
+    'required': True,
+    'friendly_name': 'Gender',
+    'field_name_regex': '^(gender|sex)$'
   },
   'scientific_name': {
     'type': 'string',
     'searchable': True,
     'required': True,
-    'allowed': ['Homo sapiens', 'Mus musculus']
+    'allowed': ['Homo sapiens', 'Mus musculus'],
+    'friendly_name': 'Scientific name',
+    'field_name_regex': '^scientific[-_\s]*(name)?$'
   },
   'phenotype': {
     'type': 'string',
     'searchable': True,
     'required': True,
+    'friendly_name': 'Phenotype',
+    'field_name_regex': '^phenotype$'
   },
   'hmdmc': {
     'type': 'string',
@@ -161,7 +171,7 @@ container_schema = {
     'schema': {
       'type': 'dict',
       'schema': {
-        'address': { 'type': 'string', 'address': True },
+        'address': {'type': 'string', 'address': True},
         'material': {
           'type': 'uuid',
           'data_relation': {
