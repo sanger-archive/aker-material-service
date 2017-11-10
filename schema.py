@@ -43,7 +43,7 @@ material_schema = {
     'searchable': True,
     'required': True,
     'friendly_name': 'Supplier name',
-    'field_name_regex': '^supplier[-_\s]*(name)?$'
+    'field_name_regex': '(?i)^supplier[-_\s]*(name)?$'
   },
 'is_tumour': {
   'type': 'string',
@@ -52,7 +52,7 @@ material_schema = {
   'allowed': ['tumour', 'normal'],
   'required': True,
   'friendly_name': 'Tumour?',
-  'field_name_regex': '^(tumour|tumor)$'
+  'field_name_regex': '(?i)^(tumour|tumor)$'
 },
   'tissue_type': {
     'type': 'string',
@@ -61,7 +61,7 @@ material_schema = {
     'allowed': ['DNA/RNA', 'Blood', 'Saliva', 'Tissue', 'Cells', 'Lysed Cells'],
     'required': True,
     'friendly_name': 'Tissue Type',
-    'field_name_regex': '^tissue[-_\s]type$'
+    'field_name_regex': '(?i)^tissue[-_\s]type$'
   },
   'donor_id': {
     'type': 'string',
@@ -69,7 +69,7 @@ material_schema = {
     'searchable': True,
     'required': True,
     'friendly_name': 'Donor ID',
-    'field_name_regex': '^donor[-_\s]*(id)?$'
+    'field_name_regex': '(?i)^donor[-_\s]*(id)?$'
   },
   'gender': {
     'type': 'string',
@@ -78,7 +78,7 @@ material_schema = {
     'allowed': ['male', 'female', 'unknown', 'not applicable', 'mixed', 'hermaphrodite'],
     'required': True,
     'friendly_name': 'Gender',
-    'field_name_regex': '^(gender|sex)$'
+    'field_name_regex': '(?i)^(gender|sex)$'
   },
   'scientific_name': {
     'type': 'string',
@@ -87,7 +87,7 @@ material_schema = {
     'required': True,
     'allowed': ['Homo sapiens', 'Mus musculus'],
     'friendly_name': 'Scientific name',
-    'field_name_regex': '^scientific[-_\s]*(name)?$'
+    'field_name_regex': '(?i)^scientific[-_\s]*(name)?$'
   },
   'phenotype': {
     'type': 'string',
@@ -95,7 +95,7 @@ material_schema = {
     'searchable': True,
     'required': False,
     'friendly_name': 'Phenotype',
-    'field_name_regex': '^phenotype$'
+    'field_name_regex': '(?i)^phenotype$'
   },
   'hmdmc': {
     'type': 'string',
