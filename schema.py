@@ -51,8 +51,8 @@ material_schema = {
   'searchable': True,
   'allowed': ['tumour', 'normal'],
   'required': True,
-  'friendly_name': 'Tumour?'
-  # needs field_name_regex
+  'friendly_name': 'Tumour?',
+  'field_name_regex': '^(tumour|tumor)$'
 },
   'tissue_type': {
     'type': 'string',
@@ -61,7 +61,7 @@ material_schema = {
     'allowed': ['DNA/RNA', 'Blood', 'Saliva', 'Tissue', 'Cells', 'Lysed Cells'],
     'required': True,
     'friendly_name': 'Tissue Type',
-    # needs field_name_regex
+    'field_name_regex': '^tissue[-_\s]type$'
   },
   'donor_id': {
     'type': 'string',
