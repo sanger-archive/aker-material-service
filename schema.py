@@ -39,13 +39,33 @@ material_schema = {
   },
   'supplier_name': {
     'type': 'string',
+    'show_on_form': True,
     'searchable': True,
     'required': True,
     'friendly_name': 'Supplier name',
     'field_name_regex': '^supplier[-_\s]*(name)?$'
   },
+'is_tumour': {
+  'type': 'string',
+  'show_on_form': True,
+  'searchable': True,
+  'allowed': ['tumour', 'normal'],
+  'required': True,
+  'friendly_name': 'Tumour?'
+  # needs field_name_regex
+},
+  'tissue_type': {
+    'type': 'string',
+    'show_on_form': True,
+    'searchable': True,
+    'allowed': ['DNA/RNA', 'Blood', 'Saliva', 'Tissue', 'Cells', 'Lysed Cells'],
+    'required': True,
+    'friendly_name': 'Tissue Type',
+    # needs field_name_regex
+  },
   'donor_id': {
     'type': 'string',
+    'show_on_form': True,
     'searchable': True,
     'required': True,
     'friendly_name': 'Donor ID',
@@ -53,14 +73,16 @@ material_schema = {
   },
   'gender': {
     'type': 'string',
+    'show_on_form': True,
     'searchable': True,
-    'allowed': ['male', 'female', 'unknown'],
+    'allowed': ['male', 'female', 'unknown', 'not applicable', 'mixed', 'hermaphrodite'],
     'required': True,
     'friendly_name': 'Gender',
     'field_name_regex': '^(gender|sex)$'
   },
   'scientific_name': {
     'type': 'string',
+    'show_on_form': True,
     'searchable': True,
     'required': True,
     'allowed': ['Homo sapiens', 'Mus musculus'],
@@ -69,8 +91,9 @@ material_schema = {
   },
   'phenotype': {
     'type': 'string',
+    'show_on_form': True,
     'searchable': True,
-    'required': True,
+    'required': False,
     'friendly_name': 'Phenotype',
     'field_name_regex': '^phenotype$'
   },

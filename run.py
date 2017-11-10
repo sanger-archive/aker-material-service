@@ -204,8 +204,9 @@ def create_app(settings):
         required = cerberus_to_json_list(schema, 'required')
         searchable = cerberus_to_json_list(schema, 'searchable')
         amend_required_order(required)
+        show_on_form = cerberus_to_json_list(schema, 'show_on_form')
 
-        return {'type': 'object', 'properties': schema, 'required': required, 'searchable': searchable}
+        return {'type': 'object', 'properties': schema, 'required': required, 'searchable': searchable, 'show_on_form': show_on_form}
 
     @app.route('/containers/json_schema', methods=['GET'])
     def containers_json_schema(**lookup):
