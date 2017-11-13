@@ -48,5 +48,7 @@ def valid_material_params():
     "donor_id": "my donor id 1",
     "gender": "female",
     "scientific_name": "Homo sapiens",
-    "phenotype": "eye colour"
+    "phenotype": "eye colour",
+    "tissue_type": "Blood",
+    "is_tumour": "normal"
   }

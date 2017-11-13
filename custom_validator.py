@@ -80,6 +80,9 @@ class CustomValidator(Validator):
     def _validate_field_name_regex(self, friendly_name, field, value):
         pass
 
+    def _validate_show_on_form(self, show_on_form, field, value):
+        pass
+
     def validate_immutable_field(self, field, data, existing):
         if (existing and data and field in data and field in existing
                 and data[field] != existing[field]):

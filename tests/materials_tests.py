@@ -101,14 +101,31 @@ class TestMaterials(ServiceTestBase):
         self.assertValidationErrorStatus(status)
         self.assertValidationError(r, {'scientific_name': 'required field'})
 
-    def test_phenotype_required_validation(self):
+    def test_tissue_type_required_validation(self):
+        data = valid_material_params()
+        del data['tissue_type']
+
+        r, status = self.post('/materials', data=data)
+
+        self.assertValidationErrorStatus(status)
+        self.assertValidationError(r, {'tissue_type': 'required field'})
+
+    def test_is_tumour_required_validation(self):
+        data = valid_material_params()
+        del data['is_tumour']
+
+        r, status = self.post('/materials', data=data)
+
+        self.assertValidationErrorStatus(status)
+        self.assertValidationError(r, {'is_tumour': 'required field'})
+
+    def test_phenotype_optional_validation(self):
         data = valid_material_params()
         del data['phenotype']
 
         r, status = self.post('/materials', data=data)
 
-        self.assertValidationErrorStatus(status)
-        self.assertValidationError(r, {'phenotype': 'required field'})
+        self.assert201(status)
 
     def test_hmdmc_invalid_format(self):
         data = valid_material_params()
@@ -282,7 +299,7 @@ class TestMaterials(ServiceTestBase):
         response, status = self.get('materials/json_schema')
         self.assert200(status)
         expected_searchable = [k for k, v in response['properties'].iteritems() if v.get('searchable')]
-        self.assertEqual(response['searchable'], expected_searchable)
+        self.assertEqual(sorted(response['searchable']), sorted(expected_searchable))
 
     def test_friendly_names(self):
         """Test that the friendly names we assign to the fields are correct"""
@@ -298,6 +315,8 @@ class TestMaterials(ServiceTestBase):
         self.assertEqual(friendly_names['donor_id'], 'Donor ID')
         self.assertEqual(friendly_names['phenotype'], 'Phenotype')
         self.assertEqual(friendly_names['supplier_name'], 'Supplier name')
+        self.assertEqual(friendly_names['is_tumour'], 'Tumour?')
+        self.assertEqual(friendly_names['tissue_type'], 'Tissue Type')
 
     def test_regex(self):
         """Test that the regular expresssions works as expected"""
@@ -326,6 +345,8 @@ class TestMaterials(ServiceTestBase):
         self.assertRegexpMatches('donor id', field_name_regexs['donor_id'])
         self.assertRegexpMatches('donor  id', field_name_regexs['donor_id'])
         self.assertRegexpMatches('donor_id', field_name_regexs['donor_id'])
+        self.assertRegexpMatches('Donor ID', field_name_regexs['donor_id'])
+        self.assertRegexpMatches('DonorID', field_name_regexs['donor_id'])
         self.assertRegexpMatches('donor-id', field_name_regexs['donor_id'])
 
         self.assertNotRegexpMatches('phenotyp', field_name_regexs['phenotype'])
@@ -336,5 +357,17 @@ class TestMaterials(ServiceTestBase):
         self.assertNotRegexpMatches('supplie', field_name_regexs['supplier_name'])
         self.assertRegexpMatches('supplier', field_name_regexs['supplier_name'])
         self.assertRegexpMatches('supplier_name', field_name_regexs['supplier_name'])
+        self.assertRegexpMatches('Supplier Name', field_name_regexs['supplier_name'])
         self.assertRegexpMatches('supplier name', field_name_regexs['supplier_name'])
         self.assertRegexpMatches('supplier-name', field_name_regexs['supplier_name'])
+
+        self.assertNotRegexpMatches('tumour shape', field_name_regexs['is_tumour'])
+        self.assertRegexpMatches('tumour', field_name_regexs['is_tumour'])
+        self.assertRegexpMatches('tumor', field_name_regexs['is_tumour'])
+
+        self.assertNotRegexpMatches('tis sue type', field_name_regexs['tissue_type'])
+        self.assertNotRegexpMatches('TISSUE', field_name_regexs['tissue_type'])
+        self.assertRegexpMatches('tissue-type', field_name_regexs['tissue_type'])
+        self.assertRegexpMatches('tissue type', field_name_regexs['tissue_type'])
+        self.assertRegexpMatches('tissue_type', field_name_regexs['tissue_type'])
+        self.assertRegexpMatches('Tissue Type', field_name_regexs['tissue_type'])
