@@ -345,8 +345,6 @@ class TestMaterials(ServiceTestBase):
         self.assertRegexpMatches('donor id', field_name_regexs['donor_id'])
         self.assertRegexpMatches('donor  id', field_name_regexs['donor_id'])
         self.assertRegexpMatches('donor_id', field_name_regexs['donor_id'])
-        self.assertRegexpMatches('Donor ID', field_name_regexs['donor_id'])
-        self.assertRegexpMatches('DonorID', field_name_regexs['donor_id'])
         self.assertRegexpMatches('donor-id', field_name_regexs['donor_id'])
 
         self.assertNotRegexpMatches('phenotyp', field_name_regexs['phenotype'])
@@ -357,7 +355,6 @@ class TestMaterials(ServiceTestBase):
         self.assertNotRegexpMatches('supplie', field_name_regexs['supplier_name'])
         self.assertRegexpMatches('supplier', field_name_regexs['supplier_name'])
         self.assertRegexpMatches('supplier_name', field_name_regexs['supplier_name'])
-        self.assertRegexpMatches('Supplier Name', field_name_regexs['supplier_name'])
         self.assertRegexpMatches('supplier name', field_name_regexs['supplier_name'])
         self.assertRegexpMatches('supplier-name', field_name_regexs['supplier_name'])
 
@@ -370,4 +367,3 @@ class TestMaterials(ServiceTestBase):
         self.assertRegexpMatches('tissue-type', field_name_regexs['tissue_type'])
         self.assertRegexpMatches('tissue type', field_name_regexs['tissue_type'])
         self.assertRegexpMatches('tissue_type', field_name_regexs['tissue_type'])
-        self.assertRegexpMatches('Tissue Type', field_name_regexs['tissue_type'])
