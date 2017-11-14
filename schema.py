@@ -42,7 +42,7 @@ material_schema = {
     'show_on_form': True,
     'searchable': True,
     'required': True,
-    'friendly_name': 'Supplier name',
+    'friendly_name': 'Supplier Name',
     'field_name_regex': '^supplier[-_\s]*(name)?$'
   },
 'is_tumour': {
@@ -58,7 +58,7 @@ material_schema = {
     'type': 'string',
     'show_on_form': True,
     'searchable': True,
-    'allowed': ['DNA/RNA', 'Blood', 'Saliva', 'Tissue', 'Cells', 'Lysed Cells'],
+    'allowed': ['dna/rna', 'blood', 'saliva', 'tissue', 'cells', 'lysed cells'],
     'required': True,
     'friendly_name': 'Tissue Type',
     'field_name_regex': '^tissue[-_\s]type$'
@@ -85,8 +85,8 @@ material_schema = {
     'show_on_form': True,
     'searchable': True,
     'required': True,
-    'allowed': ['Homo sapiens', 'Mus musculus'],
-    'friendly_name': 'Scientific name',
+    'allowed': ['homo sapiens', 'mus musculus'],
+    'friendly_name': 'Scientific Name',
     'field_name_regex': '^scientific[-_\s]*(name)?$'
   },
   'phenotype': {
