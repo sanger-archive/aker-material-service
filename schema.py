@@ -99,9 +99,12 @@ material_schema = {
   },
   'hmdmc': {
     'type': 'string',
+    'show_on_form': True,
     'searchable': True,
     'required': False,
     'hmdmc_format': True,
+    'friendly_name': 'HMDMC No.',
+    'field_name_regex': '^hmdmc$'
   },
   'hmdmc_not_required_confirmed_by': {
     'type': 'string',
