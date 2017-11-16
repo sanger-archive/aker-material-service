@@ -149,21 +149,18 @@ class TestMaterials(ServiceTestBase):
 
     def test_hmdmc_missing_set_by(self):
         data = valid_material_params()
-        data['hmdmc'] = '12/345'
+        del data['hmdmc_set_by']
         r, status = self.post('/materials', data=data)
         self.assertValidationErrorStatus(status)
         self.assertValidationError(r, {'hmdmc_set_by': 'hmdmc'})
 
     def test_hmdmc_with_set_by(self):
         data = valid_material_params()
-        data['hmdmc'] = '12/345'
-        data['hmdmc_set_by'] = 'a@b.c'
         r, status = self.post('/materials', data=data)
         self.assert201(status)
 
     def test_hmdmc_with_blank_set_by(self):
         data = valid_material_params()
-        data['hmdmc'] = '12/345'
         data['hmdmc_set_by'] = ' '
         r, status = self.post('/materials', data=data)
         self.assertValidationErrorStatus(status)
@@ -171,7 +168,6 @@ class TestMaterials(ServiceTestBase):
 
     def test_hmdmc_with_spaces_set_by(self):
         data = valid_material_params()
-        data['hmdmc'] = '12/345'
         data['hmdmc_set_by'] = '  '
         r, status = self.post('/materials', data=data)
         self.assertValidationErrorStatus(status)
@@ -367,3 +363,5 @@ class TestMaterials(ServiceTestBase):
         self.assertRegexpMatches('tissue-type', field_name_regexs['tissue_type'])
         self.assertRegexpMatches('tissue type', field_name_regexs['tissue_type'])
         self.assertRegexpMatches('tissue_type', field_name_regexs['tissue_type'])
+
+        # self.assertRegexpMatches('hmdmc', field_name_regexs['hmdmc'])
