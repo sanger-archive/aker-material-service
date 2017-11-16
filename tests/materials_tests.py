@@ -364,4 +364,4 @@ class TestMaterials(ServiceTestBase):
         self.assertRegexpMatches('tissue type', field_name_regexs['tissue_type'])
         self.assertRegexpMatches('tissue_type', field_name_regexs['tissue_type'])
 
-        # self.assertRegexpMatches('hmdmc', field_name_regexs['hmdmc'])
+        self.assertRegexpMatches('hmdmc', field_name_regexs['hmdmc'])
