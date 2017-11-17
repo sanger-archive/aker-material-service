@@ -48,6 +48,8 @@ def valid_material_params():
     "donor_id": "my donor id 1",
     "gender": "female",
     "scientific_name": "Homo sapiens",
+    "hmdmc": "12/345",
+    "hmdmc_set_by": "a@b.c",
     "phenotype": "eye colour",
     "tissue_type": "Blood",
     "is_tumour": "normal"
