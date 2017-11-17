@@ -152,7 +152,8 @@ def create_app(settings):
         if materials_cursor.count() > 0:
             response_body = json.dumps({
                 "_status": "ERR",
-                "_error": "{0} material(s) do not belong to {1}".format(materials_cursor.count(), owner_id),
+                "_error": "{0} material(s) do not belong to {1}".format(materials_cursor.count(),
+                                                                        owner_id),
                 "_issues": [material['_id'] for material in materials_cursor]
             })
 
@@ -204,8 +205,13 @@ def create_app(settings):
         required = cerberus_to_json_list(schema, 'required')
         searchable = cerberus_to_json_list(schema, 'searchable')
         amend_required_order(required)
+        show_on_form = cerberus_to_json_list(schema, 'show_on_form')
 
-        return {'type': 'object', 'properties': schema, 'required': required, 'searchable': searchable}
+        return {'type': 'object',
+                'properties': schema,
+                'required': required,
+                'searchable': searchable,
+                'show_on_form': show_on_form}
 
     @app.route('/containers/json_schema', methods=['GET'])
     def containers_json_schema(**lookup):
@@ -225,7 +231,8 @@ def create_app(settings):
         return json_schema_request('materials', True)
 
     def json_schema_request(model_name, patch=False):
-        schema_obj = cerberus_to_json_schema(current_app.config['DOMAIN'][model_name]['schema'], patch)
+        schema_obj = cerberus_to_json_schema(current_app.config['DOMAIN'][model_name]['schema'],
+                                             patch)
         schema_str = json.dumps(schema_obj, default=json_util.default)
         return Response(response=schema_str, status=200, mimetype="application/json")
 
@@ -281,7 +288,8 @@ def create_app(settings):
         for item in items:
             for k, v in item.iteritems():
                 if isinstance(v, datetime):
-                    # date_to_str converts a datetime value to the format defined in the configuration file
+                    # date_to_str converts a datetime value to the format defined in the
+                    #   configuration file
                     item[k] = date_to_str(v)
                 if isinstance(v, unicode):
                     item[k] = str(v)
@@ -337,7 +345,10 @@ def log_request_start(resource, request, lookup=None):
 
 
 def log_request_end(resource, request, response):
-    message = "%s resource=%r, request=%r, response=%r" % (request.method, resource, request, response)
+    message = "%s resource=%r, request=%r, response=%r" % (request.method,
+                                                           resource,
+                                                           request,
+                                                           response)
     app.logger.info(message)
     if response:
         app.logger.debug("Response data:\n"+response.data)
