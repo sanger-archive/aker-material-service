@@ -49,7 +49,7 @@ def valid_material_params():
         "supplier_name": "my supplier name 1",
         "donor_id": "my donor id 1",
         "gender": "female",
-        "taxon_id": 123,
+        "taxon_id": "123",
         "scientific_name": "Homo sapiens",
         "hmdmc": "12/345",
         "hmdmc_set_by": "a@b.c",
