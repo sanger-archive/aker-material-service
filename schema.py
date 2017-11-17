@@ -45,15 +45,15 @@ material_schema = {
     'friendly_name': 'Supplier name',
     'field_name_regex': '^supplier[-_\s]*(name)?$'
   },
-'is_tumour': {
-  'type': 'string',
-  'show_on_form': True,
-  'searchable': True,
-  'allowed': ['tumour', 'normal'],
-  'required': True,
-  'friendly_name': 'Tumour?',
-  'field_name_regex': '^(tumour|tumor)$'
-},
+  'is_tumour': {
+    'type': 'string',
+    'show_on_form': True,
+    'searchable': True,
+    'allowed': ['tumour', 'normal'],
+    'required': True,
+    'friendly_name': 'Tumour?',
+    'field_name_regex': '^(tumour|tumor)$'
+    },
   'tissue_type': {
     'type': 'string',
     'show_on_form': True,
@@ -79,6 +79,14 @@ material_schema = {
     'required': True,
     'friendly_name': 'Gender',
     'field_name_regex': '^(gender|sex)$'
+  },
+  'taxon_id': {
+    'type': 'integer',
+    'show_on_form': True,
+    'searchable': True,
+    'required': True,
+    'friendly_name': 'Taxon ID',
+    'field_name_regex': '^taxon[-_\s]*(id)?$'
   },
   'scientific_name': {
     'type': 'string',

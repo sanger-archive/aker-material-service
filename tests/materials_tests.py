@@ -323,6 +323,12 @@ class TestMaterials(ServiceTestBase):
             k: v.get('field_name_regex')
             for k, v in response['properties'].iteritems() if v.get('field_name_regex')}
 
+        self.assertNotRegexpMatches('taxo', field_name_regexs['taxon_id'])
+        self.assertRegexpMatches('taxon id', field_name_regexs['taxon_id'])
+        self.assertRegexpMatches('taxon_id', field_name_regexs['taxon_id'])
+        self.assertRegexpMatches('taxon-id', field_name_regexs['taxon_id'])
+        self.assertRegexpMatches('taxonid', field_name_regexs['taxon_id'])
+
         self.assertNotRegexpMatches('scientifi', field_name_regexs['scientific_name'])
         self.assertRegexpMatches('scientific', field_name_regexs['scientific_name'])
         self.assertRegexpMatches('scientific  name', field_name_regexs['scientific_name'])
