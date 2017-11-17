@@ -26,11 +26,6 @@ material_schema = {
   '_id': {
     'type': 'uuid'
   },
-  'material_type': {
-    'type': 'string',
-    'searchable': True,
-    'allowed': ['blood', 'dna']
-  },
   'available': {
     'type': 'boolean',
     'required': False,

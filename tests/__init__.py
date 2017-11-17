@@ -45,7 +45,6 @@ class ServiceTestBase(TestMinimal):
 
 def valid_material_params():
     return {
-        "material_type": "blood",
         "supplier_name": "my supplier name 1",
         "donor_id": "my donor id 1",
         "gender": "female",
