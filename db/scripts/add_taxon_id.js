@@ -23,7 +23,7 @@ let numberOfMice = db.materials.count(
 )
 
 if (totalMaterials != (numberOfHumans + numberOfMice)) {
-  throw 'The total number of records does not equal mice + men!'
+  throw 'The total number of records does not equal mice + humans!'
 }
 
 // Update data
