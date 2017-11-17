@@ -26,16 +26,13 @@ material_schema = {
   '_id': {
     'type': 'uuid'
   },
-  'material_type': {
-    'type': 'string',
-    'searchable': True,
-    'allowed': ['blood', 'dna']
-  },
   'available': {
     'type': 'boolean',
     'required': False,
     'searchable': True,
-    'default': False
+    'default': False,
+    'friendly_name': 'Available',
+    'show_on_set_results': True
   },
   'supplier_name': {
     'type': 'string',
@@ -43,17 +40,19 @@ material_schema = {
     'searchable': True,
     'required': True,
     'friendly_name': 'Supplier name',
-    'field_name_regex': '^supplier[-_\s]*(name)?$'
+    'field_name_regex': '^supplier[-_\s]*(name)?$',
+    'show_on_set_results': True
   },
-'is_tumour': {
-  'type': 'string',
-  'show_on_form': True,
-  'searchable': True,
-  'allowed': ['tumour', 'normal'],
-  'required': True,
-  'friendly_name': 'Tumour?',
-  'field_name_regex': '^(tumour|tumor)$'
-},
+  'is_tumour': {
+    'type': 'string',
+    'show_on_form': True,
+    'searchable': True,
+    'allowed': ['tumour', 'normal'],
+    'required': True,
+    'friendly_name': 'Tumour?',
+    'field_name_regex': '^(tumour|tumor)$',
+    'show_on_set_results': True
+    },
   'tissue_type': {
     'type': 'string',
     'show_on_form': True,
@@ -61,7 +60,8 @@ material_schema = {
     'allowed': ['DNA/RNA', 'Blood', 'Saliva', 'Tissue', 'Cells', 'Lysed Cells'],
     'required': True,
     'friendly_name': 'Tissue Type',
-    'field_name_regex': '^tissue[-_\s]type$'
+    'field_name_regex': '^tissue[-_\s]type$',
+    'show_on_set_results': True
   },
   'donor_id': {
     'type': 'string',
@@ -69,7 +69,8 @@ material_schema = {
     'searchable': True,
     'required': True,
     'friendly_name': 'Donor ID',
-    'field_name_regex': '^donor[-_\s]*(id)?$'
+    'field_name_regex': '^donor[-_\s]*(id)?$',
+    'show_on_set_results': True
   },
   'gender': {
     'type': 'string',
@@ -78,7 +79,17 @@ material_schema = {
     'allowed': ['male', 'female', 'unknown', 'not applicable', 'mixed', 'hermaphrodite'],
     'required': True,
     'friendly_name': 'Gender',
-    'field_name_regex': '^(gender|sex)$'
+    'field_name_regex': '^(gender|sex)$',
+    'show_on_set_results': True
+  },
+  'taxon_id': {
+    'type': 'string',
+    'show_on_form': True,
+    'searchable': True,
+    'required': True,
+    'friendly_name': 'Taxon ID',
+    'field_name_regex': '^taxon[-_\s]*(id)?$',
+    'show_on_set_results': True
   },
   'scientific_name': {
     'type': 'string',
@@ -87,7 +98,8 @@ material_schema = {
     'required': True,
     'allowed': ['Homo sapiens', 'Mus musculus'],
     'friendly_name': 'Scientific name',
-    'field_name_regex': '^scientific[-_\s]*(name)?$'
+    'field_name_regex': '^scientific[-_\s]*(name)?$',
+    'show_on_set_results': True
   },
   'phenotype': {
     'type': 'string',
@@ -95,7 +107,8 @@ material_schema = {
     'searchable': True,
     'required': False,
     'friendly_name': 'Phenotype',
-    'field_name_regex': '^phenotype$'
+    'field_name_regex': '^phenotype$',
+    'show_on_set_results': True
   },
   'hmdmc': {
     'type': 'string',
@@ -104,7 +117,8 @@ material_schema = {
     'required': False,
     'hmdmc_format': True,
     'friendly_name': 'HMDMC No.',
-    'field_name_regex': '^hmdmc$'
+    'field_name_regex': '^hmdmc$',
+    'show_on_set_results': True
   },
   'hmdmc_not_required_confirmed_by': {
     'type': 'string',
@@ -120,10 +134,14 @@ material_schema = {
   'date_of_receipt': {
     'searchable': True,
     'type': 'datetime',
+    'friendly_name': 'Date of receipt',
+    'show_on_set_results': True
   },
   'owner_id': {
     'searchable': True,
     'type': 'string',
+    'friendly_name': 'Sample Guardian',
+    'show_on_set_results': True
   },
   'meta': {
     'type': 'dict',

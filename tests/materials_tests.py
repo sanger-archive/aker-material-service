@@ -49,14 +49,6 @@ class TestMaterials(ServiceTestBase):
         self.assertEqual(len(links), 2)
         self.assertHomeLink(links)
 
-    def test_material_type_required_validation(self):
-        data = utils.merge_dict(valid_material_params(), {'material_type': 'saliva'})
-
-        r, status = self.post('/materials', data=data)
-
-        self.assertValidationErrorStatus(status)
-        self.assertValidationError(r, {'material_type': 'unallowed value saliva'})
-
     def test_supplier_name_required_validation(self):
         data = valid_material_params()
         del data['supplier_name']
@@ -322,6 +314,12 @@ class TestMaterials(ServiceTestBase):
         field_name_regexs = {
             k: v.get('field_name_regex')
             for k, v in response['properties'].iteritems() if v.get('field_name_regex')}
+
+        self.assertNotRegexpMatches('taxo', field_name_regexs['taxon_id'])
+        self.assertRegexpMatches('taxon id', field_name_regexs['taxon_id'])
+        self.assertRegexpMatches('taxon_id', field_name_regexs['taxon_id'])
+        self.assertRegexpMatches('taxon-id', field_name_regexs['taxon_id'])
+        self.assertRegexpMatches('taxonid', field_name_regexs['taxon_id'])
 
         self.assertNotRegexpMatches('scientifi', field_name_regexs['scientific_name'])
         self.assertRegexpMatches('scientific', field_name_regexs['scientific_name'])
