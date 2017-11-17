@@ -35,7 +35,8 @@ material_schema = {
     'type': 'boolean',
     'required': False,
     'searchable': True,
-    'default': False
+    'default': False,
+    'friendly_name': 'Available',
   },
   'supplier_name': {
     'type': 'string',
@@ -81,7 +82,7 @@ material_schema = {
     'field_name_regex': '^(gender|sex)$'
   },
   'taxon_id': {
-    'type': 'integer',
+    'type': 'string',
     'show_on_form': True,
     'searchable': True,
     'required': True,
@@ -128,10 +129,12 @@ material_schema = {
   'date_of_receipt': {
     'searchable': True,
     'type': 'datetime',
+    'friendly_name': 'Date of receipt',
   },
   'owner_id': {
     'searchable': True,
     'type': 'string',
+    'friendly_name': 'Owner ID',
   },
   'meta': {
     'type': 'dict',
