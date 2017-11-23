@@ -95,7 +95,7 @@ material_schema = {
     'type': 'string',
     'show_on_form': True,
     'searchable': True,
-    'required': False,
+    'required': True,
     'friendly_name': 'Scientific Name',
     'field_name_regex': '^scientific[-_\s]*(name)?$',
     'show_on_set_results': True

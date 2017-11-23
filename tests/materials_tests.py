@@ -84,6 +84,15 @@ class TestMaterials(ServiceTestBase):
         self.assertValidationErrorStatus(status)
         self.assertValidationError(r, {'gender': 'unallowed value invalid'})
 
+    def test_scientific_name_required_validation(self):
+        data = valid_material_params()
+        del data['scientific_name']
+
+        r, status = self.post('/materials', data=data)
+
+        self.assertValidationErrorStatus(status)
+        self.assertValidationError(r, {'scientific_name': 'required field'})
+
     def test_tissue_type_required_validation(self):
         data = valid_material_params()
         del data['tissue_type']
