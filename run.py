@@ -195,9 +195,8 @@ def create_app(settings):
             required.insert(0, 'supplier_name')
 
     def form_field_order(field_name):
-        """This method takes the list of fields that are to be shown on the submission
-        form and sorts them into a custom order, with any unspecified fields being
-        displayed after the sorted ones."""
+        """This function describes the order for the fields shown on the submission
+        form, with any unspecified fields being displayed after the sorted ones."""
         return FORM_FIELD_ORDER.get(field_name, len(FORM_FIELD_ORDER))
 
     def cerberus_to_json_schema(schema_obj, patch=False):
