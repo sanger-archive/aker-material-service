@@ -192,6 +192,18 @@ def create_app(settings):
             required.remove('supplier_name')
             required.insert(0, 'supplier_name')
 
+    def form_field_order(field_name):
+        """This method takes the list of fields that are to be shown on the submission
+        form and sorts them into a custom order, with any unspecified fields being
+        displayed after the sorted ones."""
+
+        field_order = ["donor_id", "supplier_name", "hmdmc", "is_tumour", "gender",
+                       "tissue_type", "taxon_id", "scientific_name", "phenotype"]
+        if field_name in field_order:
+            return field_order.index(field_name)
+        else:
+            return len(field_order) + 1
+
     def cerberus_to_json_schema(schema_obj, patch=False):
         filter_list = ['meta', 'parent', 'ancestors']
         if not patch:
@@ -206,6 +218,7 @@ def create_app(settings):
         searchable = cerberus_to_json_list(schema, 'searchable')
         amend_required_order(required)
         show_on_form = cerberus_to_json_list(schema, 'show_on_form')
+        show_on_form.sort(key=form_field_order)
 
         return {'type': 'object',
                 'properties': schema,
