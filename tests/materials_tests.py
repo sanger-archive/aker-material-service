@@ -305,11 +305,11 @@ class TestMaterials(ServiceTestBase):
             k: v.get('friendly_name')
             for k, v in response['properties'].iteritems() if v.get('friendly_name')}
 
-        self.assertEqual(friendly_names['scientific_name'], 'Scientific name')
+        self.assertEqual(friendly_names['scientific_name'], 'Scientific Name')
         self.assertEqual(friendly_names['gender'], 'Gender')
         self.assertEqual(friendly_names['donor_id'], 'Donor ID')
         self.assertEqual(friendly_names['phenotype'], 'Phenotype')
-        self.assertEqual(friendly_names['supplier_name'], 'Supplier name')
+        self.assertEqual(friendly_names['supplier_name'], 'Supplier Name')
         self.assertEqual(friendly_names['is_tumour'], 'Tumour?')
         self.assertEqual(friendly_names['tissue_type'], 'Tissue Type')
 
