@@ -39,7 +39,7 @@ material_schema = {
     'show_on_form': True,
     'searchable': True,
     'required': True,
-    'friendly_name': 'Supplier name',
+    'friendly_name': 'Supplier Name',
     'field_name_regex': '^supplier[-_\s]*(name)?$',
     'show_on_set_results': True
   },
@@ -95,9 +95,8 @@ material_schema = {
     'type': 'string',
     'show_on_form': True,
     'searchable': True,
-    'required': True,
-    'allowed': ['Homo sapiens', 'Mus musculus'],
-    'friendly_name': 'Scientific name',
+    'required': False,
+    'friendly_name': 'Scientific Name',
     'field_name_regex': '^scientific[-_\s]*(name)?$',
     'show_on_set_results': True
   },
@@ -134,7 +133,7 @@ material_schema = {
   'date_of_receipt': {
     'searchable': True,
     'type': 'datetime',
-    'friendly_name': 'Date of receipt',
+    'friendly_name': 'Date of Receipt',
     'show_on_set_results': True
   },
   'owner_id': {
