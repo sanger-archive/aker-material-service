@@ -30,6 +30,8 @@ SETTINGS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'db', e
 SWAGGER_URL = '/docs'  # URL for exposing Swagger UI (without trailing '/')
 API_URL = '/api-docs'  # Our API url (can of course be a local resource)
 
+FORM_FIELD_ORDER = {k:i for i,k in enumerate(["donor_id", "supplier_name", "hmdmc", "is_tumour", "gender",
+                       "tissue_type", "taxon_id", "scientific_name", "phenotype"]) }
 
 def create_app(settings):
     app = Eve(settings=settings, json_encoder=UUIDEncoder, validator=CustomValidator, auth=JWTAuth)
@@ -196,13 +198,7 @@ def create_app(settings):
         """This method takes the list of fields that are to be shown on the submission
         form and sorts them into a custom order, with any unspecified fields being
         displayed after the sorted ones."""
-
-        field_order = ["donor_id", "supplier_name", "hmdmc", "is_tumour", "gender",
-                       "tissue_type", "taxon_id", "scientific_name", "phenotype"]
-        if field_name in field_order:
-            return field_order.index(field_name)
-        else:
-            return len(field_order) + 1
+        return FORM_FIELD_ORDER.get(field_name, len(FORM_FIELD_ORDER))
 
     def cerberus_to_json_schema(schema_obj, patch=False):
         filter_list = ['meta', 'parent', 'ancestors']
