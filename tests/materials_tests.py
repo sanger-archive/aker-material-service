@@ -289,6 +289,13 @@ class TestMaterials(ServiceTestBase):
         expected_searchable = [k for k, v in response['properties'].iteritems() if v.get('searchable')]
         self.assertEqual(sorted(response['searchable']), sorted(expected_searchable))
 
+    def test_fields_order(self):
+        response, status = self.get('materials/json_schema')
+        self.assert200(status)
+        submission_fields = response['show_on_form']
+        self.assertTrue(submission_fields.index("donor_id") < submission_fields.index("supplier_name"))
+        self.assertTrue(submission_fields.index("taxon_id") < submission_fields.index("scientific_name"))
+
     def test_friendly_names(self):
         """Test that the friendly names we assign to the fields are correct"""
         response, status = self.get('materials/json_schema')
@@ -298,11 +305,11 @@ class TestMaterials(ServiceTestBase):
             k: v.get('friendly_name')
             for k, v in response['properties'].iteritems() if v.get('friendly_name')}
 
-        self.assertEqual(friendly_names['scientific_name'], 'Scientific name')
+        self.assertEqual(friendly_names['scientific_name'], 'Scientific Name')
         self.assertEqual(friendly_names['gender'], 'Gender')
         self.assertEqual(friendly_names['donor_id'], 'Donor ID')
         self.assertEqual(friendly_names['phenotype'], 'Phenotype')
-        self.assertEqual(friendly_names['supplier_name'], 'Supplier name')
+        self.assertEqual(friendly_names['supplier_name'], 'Supplier Name')
         self.assertEqual(friendly_names['is_tumour'], 'Tumour?')
         self.assertEqual(friendly_names['tissue_type'], 'Tissue Type')
 
