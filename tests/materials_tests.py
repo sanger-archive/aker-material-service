@@ -301,9 +301,7 @@ class TestMaterials(ServiceTestBase):
         response, status = self.get('materials/json_schema')
         self.assert200(status)
 
-        friendly_names = {
-            k: v.get('friendly_name')
-            for k, v in response['properties'].iteritems() if v.get('friendly_name')}
+        friendly_names = { k: v.get('friendly_name') for k,v in response['properties'].iteritems() }
 
         self.assertEqual(friendly_names['scientific_name'], 'Scientific Name')
         self.assertEqual(friendly_names['gender'], 'Gender')
@@ -318,9 +316,7 @@ class TestMaterials(ServiceTestBase):
         response, status = self.get('materials/json_schema')
         self.assert200(status)
 
-        field_name_regexs = {
-            k: v.get('field_name_regex')
-            for k, v in response['properties'].iteritems() if v.get('field_name_regex')}
+        field_name_regexs = { k: v.get('field_name_regex') for k,v in response['properties'].iteritems() }
 
         self.assertNotRegexpMatches('taxo', field_name_regexs['taxon_id'])
         self.assertRegexpMatches('taxon id', field_name_regexs['taxon_id'])
@@ -354,7 +350,7 @@ class TestMaterials(ServiceTestBase):
 
         self.assertNotRegexpMatches('supplier_nam', field_name_regexs['supplier_name'])
         self.assertNotRegexpMatches('supplie', field_name_regexs['supplier_name'])
-        self.assertRegexpMatches('supplier', field_name_regexs['supplier_name'])
+        self.assertNotRegexpMatches('supplier', field_name_regexs['supplier_name']) # "supplier" does not mean "supplier name"
         self.assertRegexpMatches('supplier_name', field_name_regexs['supplier_name'])
         self.assertRegexpMatches('supplier name', field_name_regexs['supplier_name'])
         self.assertRegexpMatches('supplier-name', field_name_regexs['supplier_name'])
@@ -364,9 +360,18 @@ class TestMaterials(ServiceTestBase):
         self.assertRegexpMatches('tumor', field_name_regexs['is_tumour'])
 
         self.assertNotRegexpMatches('tis sue type', field_name_regexs['tissue_type'])
-        self.assertNotRegexpMatches('TISSUE', field_name_regexs['tissue_type'])
+        self.assertNotRegexpMatches('tissue', field_name_regexs['tissue_type'])
         self.assertRegexpMatches('tissue-type', field_name_regexs['tissue_type'])
         self.assertRegexpMatches('tissue type', field_name_regexs['tissue_type'])
         self.assertRegexpMatches('tissue_type', field_name_regexs['tissue_type'])
 
         self.assertRegexpMatches('hmdmc', field_name_regexs['hmdmc'])
+
+    def test_actual_column_names_satisfy_regexes(self):
+        response, status = self.get('materials/json_schema')
+        self.assert200(status)
+        for prop in response['properties'].itervalues():
+            regex = prop.get('field_name_regex')
+            friendly_name = prop.get('friendly_name')
+            if friendly_name and regex:
+                self.assertRegexpMatches(friendly_name.lower(), regex)

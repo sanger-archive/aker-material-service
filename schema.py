@@ -40,7 +40,7 @@ material_schema = {
     'searchable': True,
     'required': True,
     'friendly_name': 'Supplier Name',
-    'field_name_regex': '^supplier[-_\s]*(name)?$',
+    'field_name_regex': r'^supplier[-_ ]*name$',
     'show_on_set_results': True
   },
   'is_tumour': {
@@ -50,7 +50,7 @@ material_schema = {
     'allowed': ['tumour', 'normal'],
     'required': True,
     'friendly_name': 'Tumour?',
-    'field_name_regex': '^(tumour|tumor)$',
+    'field_name_regex': r'^(?:is[-_ ]+)?tumou?r\??$',
     'show_on_set_results': True
     },
   'tissue_type': {
@@ -60,7 +60,7 @@ material_schema = {
     'allowed': ['DNA/RNA', 'Blood', 'Saliva', 'Tissue', 'Cells', 'Lysed Cells'],
     'required': True,
     'friendly_name': 'Tissue Type',
-    'field_name_regex': '^tissue[-_\s]type$',
+    'field_name_regex': '^tissue[-_ ]*type$',
     'show_on_set_results': True
   },
   'donor_id': {
@@ -69,7 +69,7 @@ material_schema = {
     'searchable': True,
     'required': True,
     'friendly_name': 'Donor ID',
-    'field_name_regex': '^donor[-_\s]*(id)?$',
+    'field_name_regex': '^donor(?:[-_ ]*id)?$',
     'show_on_set_results': True
   },
   'gender': {
@@ -79,7 +79,7 @@ material_schema = {
     'allowed': ['male', 'female', 'unknown', 'not applicable', 'mixed', 'hermaphrodite'],
     'required': True,
     'friendly_name': 'Gender',
-    'field_name_regex': '^(gender|sex)$',
+    'field_name_regex': '^(?:gender|sex)$',
     'show_on_set_results': True
   },
   'taxon_id': {
@@ -88,7 +88,7 @@ material_schema = {
     'searchable': True,
     'required': True,
     'friendly_name': 'Taxon ID',
-    'field_name_regex': '^taxon[-_\s]*(id)?$',
+    'field_name_regex': '^taxon(?:[-_ ]*id)?$',
     'show_on_set_results': True
   },
   'scientific_name': {
@@ -97,7 +97,7 @@ material_schema = {
     'searchable': True,
     'required': True,
     'friendly_name': 'Scientific Name',
-    'field_name_regex': '^scientific[-_\s]*(name)?$',
+    'field_name_regex': '^scientific(?:[-_ ]*name)?$',
     'show_on_set_results': True
   },
   'phenotype': {
@@ -116,7 +116,7 @@ material_schema = {
     'required': False,
     'hmdmc_format': True,
     'friendly_name': 'HMDMC No.',
-    'field_name_regex': '^hmdmc$',
+    'field_name_regex': r'^hmdmc(?:[-_ ]+no\.?)?$',
     'show_on_set_results': True
   },
   'hmdmc_not_required_confirmed_by': {
