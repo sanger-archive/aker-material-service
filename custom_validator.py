@@ -6,7 +6,7 @@ import re
 
 import pdb
 
-HMDMC_PATTERN = re.compile(r'^[0-9]{2}/[0-9]{3}$')
+HMDMC_PATTERN = re.compile(r'^[0-9]{2}/[0-9]{3,4}$')
 
 
 class CustomValidator(Validator):
@@ -63,7 +63,7 @@ class CustomValidator(Validator):
 
     def _validate_hmdmc_format(self, hmdmc_format, field, value):
         if hmdmc_format and value is not None and not HMDMC_PATTERN.match(value):
-            self._error(field, 'HMDMCs must be of the format ##/###')
+            self._error(field, 'HMDMCs must be of the format ##/####')
         elif value and not self.document.get('hmdmc_set_by'):
             self._error('hmdmc_set_by', "The hmdmc_set_by field must be specified if an hmdmc is given.")
 
