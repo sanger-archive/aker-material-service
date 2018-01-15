@@ -50,7 +50,7 @@ def valid_material_params():
         "gender": "female",
         "taxon_id": "9606",
         "scientific_name": "Homo sapiens",
-        "hmdmc": "12/345",
+        "hmdmc": "12/3456",
         "hmdmc_set_by": "a@b.c",
         "phenotype": "eye colour",
         "tissue_type": "Blood",
