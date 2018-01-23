@@ -267,6 +267,16 @@ class TestMaterials(ServiceTestBase):
         self.assert403(status)
         self.assertEqual(len(r['_issues']), 2)
 
+    def test_submitter_id_is_set(self):
+        submitter_id = 'abc@test.com'
+        materials_data = utils.merge_dict(valid_material_params(), {'submitter_id': submitter_id})
+
+        r, status = self.post('/materials/', data=materials_data)
+        self.assert201(status)
+
+        r, status = self.get('materials', '', r['_id'])
+        self.assertEqual(r['submitter_id'], submitter_id)
+
     def test_bulk_search_materials(self):
         query = {'owner_id': 'abc'}
         query_empty = {'owner_id': 'xyz'}
