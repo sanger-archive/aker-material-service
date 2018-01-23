@@ -1,6 +1,7 @@
 from eve.io.base import BaseJSONEncoder
 from uuid import UUID
 
+
 class UUIDEncoder(BaseJSONEncoder):
     """ JSONEconder subclass used by the json render function.
     This is different from BaseJSONEoncoder since it also addresses

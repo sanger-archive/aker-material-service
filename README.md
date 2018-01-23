@@ -46,3 +46,9 @@ This runs the `single_test` test in the `TestMaterials` class in the
 `materials_tests` module.
 
 `python -m unittest tests.materials_tests.TestMaterials.single_test`
+
+## Misc.
+### Linting
+A `setup.cfg` exists for the `pycodestyle` linting package and can be used by installing it via
+pip: `pip install pycodestyle`. Once it's installed, it can be used via the command-line or an IDE
+package.

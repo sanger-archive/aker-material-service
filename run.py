@@ -30,8 +30,10 @@ SETTINGS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'db', e
 SWAGGER_URL = '/docs'  # URL for exposing Swagger UI (without trailing '/')
 API_URL = '/api-docs'  # Our API url (can of course be a local resource)
 
-FORM_FIELD_ORDER = {k:i for i,k in enumerate(["donor_id", "supplier_name", "hmdmc", "is_tumour", "gender",
-                       "tissue_type", "taxon_id", "scientific_name", "phenotype"]) }
+FORM_FIELD_ORDER = {k: i for i, k in enumerate(
+    ["donor_id", "supplier_name", "hmdmc", "is_tumour", "gender", "tissue_type", "taxon_id",
+     "scientific_name", "phenotype"])}
+
 
 def create_app(settings):
     app = Eve(settings=settings, json_encoder=UUIDEncoder, validator=CustomValidator, auth=JWTAuth)
@@ -320,6 +322,7 @@ def create_app(settings):
 
     return app
 
+
 def main():
     # enable logging to 'app.log' file
     log_handlers = [
@@ -345,12 +348,10 @@ def main():
     for handler in log_handlers:
         app.logger.addHandler(handler)
 
-
     def log_request_start(resource, request, lookup=None):
         message = "%s resource=%r, request=%r" % (request.method, resource, request)
         app.logger.info(message)
         app.logger.info("Request data:\n"+request.data)
-
 
     def log_request_end(resource, request, response):
         message = "%s resource=%r, request=%r, response=%r" % (request.method,
@@ -360,7 +361,6 @@ def main():
         app.logger.info(message)
         if response:
             app.logger.debug("Response data:\n"+response.data)
-
 
     for method in 'GET POST PATCH PUT DELETE'.split():
         events = getattr(app, 'on_pre_'+method)
@@ -372,6 +372,7 @@ def main():
     zipkin.init_app(app)
 
     app.run()
+
 
 if __name__ == '__main__':
     main()

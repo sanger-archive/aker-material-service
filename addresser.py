@@ -7,16 +7,18 @@ def index_to_address_part(index, alpha):
     else:
         return str(index+1)
 
+
 def address_part_to_index(part, alpha):
     """Convert the letter or number from part of an address to a zero-based index.
     Return None if the conversion is impossible.
     """
     if alpha:
-        if 'A'<=part<='Z':
+        if 'A' <= part <= 'Z':
             return ord(part)-ord('A')
     else:
         if part.isdigit():
             return int(part)-1
+
 
 class Addresser(object):
     """Class for converting to/from container slot addresses."""
@@ -43,10 +45,10 @@ class Addresser(object):
         if self.is_numeric:
             return str(index+1)
         row = index//self.num_cols
-        col = index%self.num_cols
+        col = index % self.num_cols
         return self.separator.join([
-            index_to_address_part(i,a)
-            for i,a in ((row, self.row_is_alpha), (col, self.col_is_alpha))
+            index_to_address_part(i, a)
+            for i, a in ((row, self.row_is_alpha), (col, self.col_is_alpha))
         ])
 
     __getitem__ = index_to_address
@@ -54,12 +56,12 @@ class Addresser(object):
     def __contains__(self, address):
         """Is the given address valid for this addresser?"""
         if self.is_numeric:
-            return address.isdigit() and 1<=int(address)<=len(self)
+            return address.isdigit() and 1 <= int(address) <= len(self)
         if self.separator not in address:
             return False
-        r,c = address.split(self.separator, 1)
+        r, c = address.split(self.separator, 1)
         ri, ci = (address_part_to_index(i, a)
-                  for i,a in ((r, self.row_is_alpha), (c, self.col_is_alpha)))
+                  for i, a in ((r, self.row_is_alpha), (c, self.col_is_alpha)))
         return (ri is not None and ci is not None
                 and 0 <= ri < self.num_rows and 0 <= ci < self.num_cols)
 
@@ -73,10 +75,10 @@ class Addresser(object):
 
         if self.is_numeric:
             if not address.isdigit():
-                raise ValueError("Invalid address format: %r"%address)
+                raise ValueError("Invalid address format: %r" % address)
             i = int(address)-1
             if not 0 <= i < len(self):
-                raise ValueError("Address out of range: %r"%address)
+                raise ValueError("Address out of range: %r" % address)
             return i
 
         if self.separator not in address:
@@ -84,19 +86,18 @@ class Addresser(object):
         else:
             r, c = address.split(self.separator, 1)
             ri, ci = (address_part_to_index(i, a)
-                      for i,a in ((r, self.row_is_alpha), (c, self.col_is_alpha)))
+                      for i, a in ((r, self.row_is_alpha), (c, self.col_is_alpha)))
         if ri is None or ci is None:
-            raise ValueError("Invalid address format: %r"%address)
+            raise ValueError("Invalid address format: %r" % address)
         if not 0 <= ri < self.num_rows:
             if not 0 <= ci < self.num_cols:
-                raise ValueError("Row and column out of range: %r"%address)
-            raise ValueError("Row out of range: %r"%address)
+                raise ValueError("Row and column out of range: %r" % address)
+            raise ValueError("Row out of range: %r" % address)
         if not 0 <= ci < self.num_cols:
-            raise ValueError("Column out of range: %r"%address)
+            raise ValueError("Column out of range: %r" % address)
         return ri*self.num_cols + ci
 
     def __repr__(self):
-        return 'Addresser(num_rows=%s, num_cols=%s, row_is_alpha=%s, col_is_alpha=%s)'%(
+        return 'Addresser(num_rows=%s, num_cols=%s, row_is_alpha=%s, col_is_alpha=%s)' % (
                self.num_rows, self.num_cols, self.row_is_alpha, self.col_is_alpha
         )
-

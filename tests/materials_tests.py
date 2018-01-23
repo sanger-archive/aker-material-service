@@ -267,6 +267,16 @@ class TestMaterials(ServiceTestBase):
         self.assert403(status)
         self.assertEqual(len(r['_issues']), 2)
 
+    def test_submitter_id_is_set(self):
+        submitter_id = 'abc@test.com'
+        materials_data = utils.merge_dict(valid_material_params(), {'submitter_id': submitter_id})
+
+        r, status = self.post('/materials/', data=materials_data)
+        self.assert201(status)
+
+        r, status = self.get('materials', '', r['_id'])
+        self.assertEqual(r['submitter_id'], submitter_id)
+
     def test_bulk_search_materials(self):
         query = {'owner_id': 'abc'}
         query_empty = {'owner_id': 'xyz'}
@@ -301,7 +311,7 @@ class TestMaterials(ServiceTestBase):
         response, status = self.get('materials/json_schema')
         self.assert200(status)
 
-        friendly_names = { k: v.get('friendly_name') for k,v in response['properties'].iteritems() }
+        friendly_names = {k: v.get('friendly_name') for k, v in response['properties'].iteritems()}
 
         self.assertEqual(friendly_names['scientific_name'], 'Scientific Name')
         self.assertEqual(friendly_names['gender'], 'Gender')
@@ -316,7 +326,7 @@ class TestMaterials(ServiceTestBase):
         response, status = self.get('materials/json_schema')
         self.assert200(status)
 
-        field_name_regexs = { k: v.get('field_name_regex') for k,v in response['properties'].iteritems() }
+        field_name_regexs = {k: v.get('field_name_regex') for k, v in response['properties'].iteritems()}
 
         self.assertNotRegexpMatches('taxo', field_name_regexs['taxon_id'])
         self.assertRegexpMatches('taxon id', field_name_regexs['taxon_id'])
@@ -350,7 +360,8 @@ class TestMaterials(ServiceTestBase):
 
         self.assertNotRegexpMatches('supplier_nam', field_name_regexs['supplier_name'])
         self.assertNotRegexpMatches('supplie', field_name_regexs['supplier_name'])
-        self.assertNotRegexpMatches('supplier', field_name_regexs['supplier_name']) # "supplier" does not mean "supplier name"
+        # "supplier" does not mean "supplier name"
+        self.assertNotRegexpMatches('supplier', field_name_regexs['supplier_name'])
         self.assertRegexpMatches('supplier_name', field_name_regexs['supplier_name'])
         self.assertRegexpMatches('supplier name', field_name_regexs['supplier_name'])
         self.assertRegexpMatches('supplier-name', field_name_regexs['supplier_name'])
