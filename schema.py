@@ -142,6 +142,12 @@ material_schema = {
     'friendly_name': 'Sample Guardian',
     'show_on_set_results': True
   },
+  'submitter_id': {
+    'searchable': True,
+    'type': 'string',
+    'friendly_name': 'Submitter',
+    'show_on_set_results': True
+  },
   'meta': {
     'type': 'dict',
     'allow_unknown': True,

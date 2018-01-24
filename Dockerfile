@@ -15,5 +15,9 @@ RUN pip install -r requirements.txt
 # Add all remaining contents to the image
 ADD . /code
 
+# Add the wait-for-it file to utils
+ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh /utils/wait-for-it.sh
+RUN chmod u+x /utils/wait-for-it.sh
+
 # Run the app
 CMD python run.py
