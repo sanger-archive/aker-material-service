@@ -1,5 +1,5 @@
 var minDate = new Date(2016, 0, 1, 0, 0, 0, 0);
-var maxDate = new Date(2017, 0, 1, 0, 0, 0, 0);
+var maxDate = new Date(2018, 0, 1, 0, 0, 0, 0);
 var delta = maxDate.getTime() - minDate.getTime();
 
 var tableName = 'materials';
@@ -34,6 +34,7 @@ while(index < documentNumber) {
         date_of_receipt: date_of_receipt,
         available: true,
         owner_id: 'ac42@sanger.ac.uk',
+        submitter_id: 'seed@sanger.ac.uk',
         is_tumour: false,
     };
 
