@@ -236,7 +236,20 @@ container_schema = {
 
 DOMAIN = {
   'materials': {
-    'schema': material_schema
+    'schema': material_schema,
+    'mongo_indexes': {
+        'Supplier Name Index': [('supplier_name', 1)],
+        'Tissue Type Index': [('tissue_type', 1)],
+        'Donor ID Index': [('donor_id', 1)],
+        'Gender Index': [('gender', 1)],
+        'Taxon ID Index': [('taxon_id', 1)],
+        'Scientific Name Index': [('scientific_name', 1)],
+        'Phenotype Index': [('phenotype', 1)],
+        'HMDMC Index': [('hmdmc', 1)],
+        'Owner ID Index': [('owner_id', 1)],
+        'Submitter ID Index': [('submitter_id', 1)],
+        'Date of Receipt Index': [('date_of_receipt', 1)]
+    }
   },
   'containers': {
     'schema': container_schema
