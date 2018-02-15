@@ -1,11 +1,11 @@
-var minDate = new Date(2010, 0, 1, 0, 0, 0, 0);
-var maxDate = new Date(2017, 0, 1, 0, 0, 0, 0);
+var minDate = new Date(2016, 0, 1, 0, 0, 0, 0);
+var maxDate = new Date(2018, 0, 1, 0, 0, 0, 0);
 var delta = maxDate.getTime() - minDate.getTime();
 
-var tableName = table;
+var tableName = 'materials';
 tableName = db[tableName];
 
-var documentNumber = n;
+var documentNumber = 10000;
 
 var batchNumber = 5 * 1000;
 
@@ -14,8 +14,8 @@ var start = new Date();
 var batchDocuments = new Array();
 var index = 0;
 
-var materials_types = ['cb491d0c-97e9-4d88-a68e-61896e064278', 'a012d300-55d7-4762-a5ce-15b8bcfdc85e'];
-var genders = ['male', 'female', 'unknown'];
+var genders = ['male', 'female', 'unknown', 'not applicable', 'mixed', 'hermaphrodite'];
+var tissue_types = ['DNA/RNA', 'Blood', 'Saliva', 'Tissue', 'Cells', 'Lysed Cells'];
 
 while(index < documentNumber) {
     var date_of_receipt = new Date(minDate.getTime() + Math.random() * delta);
@@ -23,18 +23,19 @@ while(index < documentNumber) {
 
     var document = {
         _id: generateUUID(),
-        material_type: {
-            _id: chooseRandom(materials_types)
-        },
         supplier_name: 'Supplier Name ' + index,
         donor_id: 'Donor ID ' + index,
         gender: chooseRandom(genders),
-        scientific_name: 'Scientific Name ' + index,
+        tissue_type: chooseRandom(tissue_types),
+        taxon_id: 9606,
+        scientific_name: 'Homo sapiens',
+        hmdmc: '10/123',
         phenotype: 'Phenotype ' + (Math.round(index / 100) * 100),
         date_of_receipt: date_of_receipt,
-        meta: {
-            'anything': 'i like ' + index
-        }
+        available: true,
+        owner_id: 'ac42@sanger.ac.uk',
+        submitter_id: 'seed@sanger.ac.uk',
+        is_tumour: false,
     };
 
     batchDocuments[index % batchNumber] = document;
