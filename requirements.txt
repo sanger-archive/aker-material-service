@@ -66,6 +66,7 @@ python-glanceclient==2.5.0
 python-heatclient==1.7.0
 python-ironicclient==1.8.0
 python-keystoneclient==3.8.0
+python-logstash-async==1.4.1
 python-magnumclient==2.3.1
 python-mistralclient==2.1.2
 python-neutronclient==6.0.0

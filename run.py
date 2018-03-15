@@ -8,6 +8,7 @@ import json
 import copy
 import pdb
 
+from logstash_async.handler import AsynchronousLogstashHandler
 from uuid_encoder import UUIDEncoder
 from custom_validator import CustomValidator
 from eve import Eve
@@ -320,55 +321,68 @@ def create_app(settings):
     def bulk_find_containers(**lookup):
         return _bulk_find('containers', request.json)
 
+    # Logging
+    app.logger.setLevel(app.config.get('LOGGING_LEVEL', logging.WARNING))
+
+    # enable logging to 'app.log' file
+    log_handlers = [
+        logging.FileHandler('app.log'),
+        logging.StreamHandler(sys.stdout),
+    ]
+
+    # set a custom log format, and add request
+    # metadata to each log line
+    for handler in log_handlers:
+        handler.setFormatter(logging.Formatter(
+                '%(asctime)s %(levelname)s: %(message)s '
+                '[in %(filename)s:%(lineno)d] -- ip: %(clientip)s, '
+                'url: %(url)s, method: %(method)s'))
+
+    for handler in log_handlers:
+        app.logger.addHandler(handler)
+
+    def log_request_start(resource, request, lookup=None):
+        message = "%s resource=%r, request=%r" % (request.method, resource, request)
+        app.logger.info(message)
+        app.logger.info("Request data:\n"+request.data)
+
+    def log_request_end(resource, request, response):
+        message = "%s resource=%r, request=%r, response=%r" % (request.method,
+                                                               resource,
+                                                               request,
+                                                               response)
+        app.logger.info(message)
+
+        if response:
+            app.logger.debug("Response data:\n"+response.data)
+
+    def logstash_logger(resource, request, response):
+        # Something similar to lograge for Rails apps
+        # [200] GET /materials?available=true (materials)
+        message = "[%d] %s %s (%r)" % (response.status_code, request.method, request.full_path, resource)
+        app.logger.info(message)
+
+    if app.config.get('LOGSTASH_ENABLE') is True:
+        logstash_handler = AsynchronousLogstashHandler(
+            app.config.get('LOGSTASH_HOST'),
+            app.config.get('LOGSTASH_PORT'),
+            database_path='logstash.db', transport='logstash_async.transport.UdpTransport'
+        )
+        app.logger.addHandler(logstash_handler)
+
+    for method in 'GET POST PATCH PUT DELETE'.split():
+        if app.config.get('LOGSTASH_ENABLE'):
+            events = getattr(app, 'on_post_'+method)
+            events += logstash_logger
+        else:
+            events = getattr(app, 'on_pre_'+method)
+            events += log_request_start
+            events = getattr(app, 'on_post_'+method)
+            events += log_request_end
+
     return app
 
-
-# enable logging to 'app.log' file
-log_handlers = [
-     logging.FileHandler('app.log'),
-     logging.StreamHandler(sys.stdout),
-]
-
-# set a custom log format, and add request
-# metadata to each log line
-for handler in log_handlers:
-    handler.setFormatter(logging.Formatter(
-            '%(asctime)s %(levelname)s: %(message)s '
-            '[in %(filename)s:%(lineno)d] -- ip: %(clientip)s, '
-            'url: %(url)s, method: %(method)s'))
-
 app = create_app(SETTINGS_PATH)
-
-# the default log level is set to WARNING, so
-# we have to explictly set the logging level
-# to INFO to get our custom message logged.
-app.logger.setLevel(logging.INFO)
-
-for handler in log_handlers:
-    app.logger.addHandler(handler)
-
-
-def log_request_start(resource, request, lookup=None):
-    message = "%s resource=%r, request=%r" % (request.method, resource, request)
-    app.logger.info(message)
-    app.logger.info("Request data:\n"+request.data)
-
-
-def log_request_end(resource, request, response):
-    message = "%s resource=%r, request=%r, response=%r" % (request.method,
-                                                           resource,
-                                                           request,
-                                                           response)
-    app.logger.info(message)
-    if response:
-        app.logger.debug("Response data:\n"+response.data)
-
-
-for method in 'GET POST PATCH PUT DELETE'.split():
-    events = getattr(app, 'on_pre_'+method)
-    events += log_request_start
-    events = getattr(app, 'on_post_'+method)
-    events += log_request_end
 
 zipkin = Zipkin(sample_rate=1)
 zipkin.init_app(app)
