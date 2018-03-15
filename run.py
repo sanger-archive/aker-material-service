@@ -322,10 +322,6 @@ def create_app(settings):
         return _bulk_find('containers', request.json)
 
     # Logging
-
-    # the default log level is set to WARNING, so
-    # we have to explictly set the logging level
-    # to INFO to get our custom message logged.
     app.logger.setLevel(app.config.get('LOGGING_LEVEL', logging.WARNING))
 
     # enable logging to 'app.log' file
