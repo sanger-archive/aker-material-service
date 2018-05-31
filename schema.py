@@ -148,6 +148,22 @@ material_schema = {
     'friendly_name': 'Submitter',
     'show_on_set_results': True
   },
+  'concentration': {
+    'type': 'float',
+    'show_on_form': False,
+    'searchable': True,
+    'required': False,
+    'friendly_name': 'Concentration (ng/uL)',
+    'show_on_set_results': True
+  },
+  'volume': {
+    'type': 'float',
+    'show_on_form': False,
+    'searchable': True,
+    'required': False,
+    'friendly_name': 'Volume (uL)',
+    'show_on_set_results': True
+  },
   'meta': {
     'type': 'dict',
     'allow_unknown': True,
