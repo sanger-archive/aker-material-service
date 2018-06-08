@@ -1,5 +1,7 @@
 # Aker - Materials service
 
+[![Build Status](https://travis-ci.org/sanger/aker-material-service.svg?branch=devel)](https://travis-ci.org/sanger/aker-material-service)
+
 A service for the creation and management of materials.
 
 The service is written using the [Eve](http://python-eve.org/index.html) REST
