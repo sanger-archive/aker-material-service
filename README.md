@@ -1,6 +1,8 @@
 # Aker - Materials service
 
 [![Build Status](https://travis-ci.org/sanger/aker-material-service.svg?branch=devel)](https://travis-ci.org/sanger/aker-material-service)
+[![Maintainability](https://api.codeclimate.com/v1/badges/260ee8cfb2ee2d64dc32/maintainability)](https://codeclimate.com/github/sanger/aker-material-service/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/260ee8cfb2ee2d64dc32/test_coverage)](https://codeclimate.com/github/sanger/aker-material-service/test_coverage)
 
 A service for the creation and management of materials.
 
@@ -9,7 +11,7 @@ API framework (which itself is based on Flask) using MongoDB as its database.
 
 ## Requirements
 
-- Python 2.7
+- Python 2.7.15
 - pip
 - virtualenv
 - MongoDB
