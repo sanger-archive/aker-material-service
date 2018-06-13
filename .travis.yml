@@ -27,4 +27,5 @@ before_script:
 script:
   - coverage run -m unittest discover -v -s tests -p "*tests.py"
 after_script:
+  - coverage xml
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
