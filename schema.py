@@ -150,6 +150,8 @@ material_schema = {
   },
   'concentration': {
     'type': 'float',
+    'nullable': True,
+    'default': None,
     'show_on_form': False,
     'searchable': True,
     'required': False,
@@ -158,6 +160,8 @@ material_schema = {
   },
   'volume': {
     'type': 'float',
+    'nullable': True,
+    'default': None,    
     'show_on_form': False,
     'searchable': True,
     'required': False,
