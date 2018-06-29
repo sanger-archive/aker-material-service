@@ -57,7 +57,7 @@ material_schema = {
     'type': 'string',
     'show_on_form': True,
     'searchable': True,
-    'allowed': ['DNA/RNA', 'Blood', 'Saliva', 'Tissue', 'Cells', 'Lysed Cells'],
+    'allowed': ['DNA', 'RNA', 'Blood', 'Saliva', 'Tissue', 'Cells', 'Cell Line', 'Lysed Cells'],
     'required': True,
     'friendly_name': 'Tissue Type',
     'field_name_regex': '^tissue[-_ ]*type$',
@@ -161,7 +161,7 @@ material_schema = {
   'volume': {
     'type': 'float',
     'nullable': True,
-    'default': None,    
+    'default': None,
     'show_on_form': False,
     'searchable': True,
     'required': False,
