@@ -170,6 +170,8 @@ material_schema = {
   },
   'amount': {
     'type': 'float',
+    'nullable': True,
+    'default': None,
     'show_on_form': False,
     'searchable': True,
     'required': False,
