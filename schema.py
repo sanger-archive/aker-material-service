@@ -168,6 +168,14 @@ material_schema = {
     'friendly_name': 'Volume (uL)',
     'show_on_set_results': True
   },
+  'amount': {
+    'type': 'float',
+    'show_on_form': False,
+    'searchable': True,
+    'required': False,
+    'friendly_name': 'Amount (ng)',
+    'show_on_set_results': True
+  },
   'meta': {
     'type': 'dict',
     'allow_unknown': True,
