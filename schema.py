@@ -168,6 +168,16 @@ material_schema = {
     'friendly_name': 'Volume (uL)',
     'show_on_set_results': True
   },
+  'amount': {
+    'type': 'float',
+    'nullable': True,
+    'default': None,
+    'show_on_form': False,
+    'searchable': True,
+    'required': False,
+    'friendly_name': 'Amount (ng)',
+    'show_on_set_results': True
+  },
   'meta': {
     'type': 'dict',
     'allow_unknown': True,
@@ -270,7 +280,8 @@ DOMAIN = {
         'Submitter ID Index': [('submitter_id', 1)],
         'Date of Receipt Index': [('date_of_receipt', 1)],
         'Concentration Index': [('concentration', 1)],
-        'Volume Index': [('volume', 1)]
+        'Volume Index': [('volume', 1)],
+        'Amount Index': [('amount', 1)]
     }
   },
   'containers': {
