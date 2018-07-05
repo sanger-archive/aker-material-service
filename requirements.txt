@@ -9,3 +9,4 @@ pymongo==3.3.1
 -e git+https://github.com/jbeast/flask-pymongo@14a96773349af2a544747ff97ee247a9e22a5360#egg=Flask_PyMongo
 PyJWT==1.5.0
 Werkzeug==0.11.3
+coverage==4.5.1
