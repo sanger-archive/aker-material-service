@@ -57,7 +57,7 @@ material_schema = {
     'type': 'string',
     'show_on_form': True,
     'searchable': True,
-    'allowed': ['DNA/RNA', 'Blood', 'Saliva', 'Tissue', 'Cells', 'Lysed Cells'],
+    'allowed': ['DNA', 'RNA', 'Blood', 'Saliva', 'Tissue', 'Cells', 'Cell Line', 'Lysed Cells'],
     'required': True,
     'friendly_name': 'Tissue Type',
     'field_name_regex': '^tissue[-_ ]*type$',
@@ -161,11 +161,21 @@ material_schema = {
   'volume': {
     'type': 'float',
     'nullable': True,
-    'default': None,    
+    'default': None,
     'show_on_form': False,
     'searchable': True,
     'required': False,
     'friendly_name': 'Volume (uL)',
+    'show_on_set_results': True
+  },
+  'amount': {
+    'type': 'float',
+    'nullable': True,
+    'default': None,
+    'show_on_form': False,
+    'searchable': True,
+    'required': False,
+    'friendly_name': 'Amount (ng)',
     'show_on_set_results': True
   },
   'meta': {
@@ -268,7 +278,10 @@ DOMAIN = {
         'HMDMC Index': [('hmdmc', 1)],
         'Owner ID Index': [('owner_id', 1)],
         'Submitter ID Index': [('submitter_id', 1)],
-        'Date of Receipt Index': [('date_of_receipt', 1)]
+        'Date of Receipt Index': [('date_of_receipt', 1)],
+        'Concentration Index': [('concentration', 1)],
+        'Volume Index': [('volume', 1)],
+        'Amount Index': [('amount', 1)]
     }
   },
   'containers': {
