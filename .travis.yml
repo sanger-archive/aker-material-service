@@ -1,0 +1,33 @@
+language: python
+git:
+  depth: false
+  submodules: false
+branches:
+  only:
+    - devel
+    - wip
+    - uat
+    - master
+python:
+  - "2.7.15"
+cache: pip
+env:
+  global:
+    - CC_TEST_REPORTER_ID=c42b639119948f08eb3299bef6c2d4689ccbde48f30e1f5ae96482524c84b8fe
+services:
+  - mongodb
+# command to install dependencies
+install:
+  - pip install -r requirements.txt
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+  - sleep 15 # https://docs.travis-ci.com/user/database-setup/#MongoDB
+  - mongo mydb_test --eval 'db.createUser({user:"travis",pwd:"test",roles:["readWrite"]});'
+# command to run tests
+script:
+  - coverage run -m unittest discover -v -s tests -p "*tests.py"
+after_script:
+  - coverage xml
+  - if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi

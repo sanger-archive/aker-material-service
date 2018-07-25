@@ -282,6 +282,11 @@ def create_app(settings):
         if limit and page > 1:
             find_args['skip'] = limit*(page-1)
 
+        try:
+            find_args['sort'] = [(args['sort_by'], args['sort_order'])]
+        except:
+            find_args['sort'] = None
+
         cursor = app.data.driver.db[resource].find(**find_args)
         total = cursor.count()
         pages = ((total + limit-1) // limit) if limit else 1
@@ -352,7 +357,6 @@ def create_app(settings):
                                                                request,
                                                                response)
         app.logger.info(message)
-
         if response:
             app.logger.debug("Response data:\n"+response.data)
 
