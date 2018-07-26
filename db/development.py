@@ -5,10 +5,7 @@ execfile(ENVIRONMENT_PATH)
 
 LOGGING_LEVEL = 'INFO'
 
-MONGO_HOST = 'localhost'
-MONGO_PORT = 27017
-
-MONGO_DBNAME = 'materials'
+MONGO_URI = 'mongodb://localhost:27017/materials'
 
 ZIPKIN_DISABLE = True
 
