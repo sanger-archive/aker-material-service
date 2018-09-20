@@ -246,6 +246,10 @@ container_schema = {
     'minlength': 6,
     'non_aker_barcode': True,
   },
+  'supplier_plate_name': {
+    'type': 'string',
+    'required': False,
+  },
   'slots': {
     'type': 'list',
     'uniqueaddresses': True,
