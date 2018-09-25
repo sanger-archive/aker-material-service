@@ -80,6 +80,9 @@ class CustomValidator(Validator):
     def _validate_field_name_regex(self, friendly_name, field, value):
         pass
 
+    def _validate_unique_value(self, friendly_name, field, value):
+        pass
+
     def _validate_show_on_form(self, show_on_form, field, value):
         pass
 
