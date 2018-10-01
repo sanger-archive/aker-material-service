@@ -39,6 +39,7 @@ material_schema = {
     'show_on_form': True,
     'searchable': True,
     'required': True,
+    'unique_value': True,
     'friendly_name': 'Supplier Name',
     'field_name_regex': r'^supplier[-_ ]*name$',
     'show_on_set_results': True
@@ -68,6 +69,7 @@ material_schema = {
     'show_on_form': True,
     'searchable': True,
     'required': True,
+    'unique_value': True,
     'friendly_name': 'Donor ID',
     'field_name_regex': '^donor(?:[-_ ]*id)?$',
     'show_on_set_results': True
@@ -243,6 +245,10 @@ container_schema = {
     'unique': True,
     'minlength': 6,
     'non_aker_barcode': True,
+  },
+  'supplier_plate_name': {
+    'type': 'string',
+    'required': False,
   },
   'slots': {
     'type': 'list',
