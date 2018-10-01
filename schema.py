@@ -249,6 +249,7 @@ container_schema = {
   'supplier_plate_name': {
     'type': 'string',
     'required': False,
+    'nullable': True,
   },
   'slots': {
     'type': 'list',
