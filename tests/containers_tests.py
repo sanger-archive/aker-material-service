@@ -441,6 +441,17 @@ class TestContainers(ServiceTestBase):
 
     self.assertEqual(response['slots'][0]['material'], materials_response)
 
+  def test_supplier_plate_name_can_be_null(self):
+    data = valid_container_params({
+      'supplier_plate_name': None
+    })
+
+    container, _ = self.post('/containers', data=data)
+
+    response, status = self.get('containers/' + container['_id'] + '?embedded={"slots.material": 1}')
+
+    self.assert200(status)
+
   def test_row_alpha_range(self):
     data = valid_container_params({
       'row_is_alpha': True,
