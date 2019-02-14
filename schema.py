@@ -53,12 +53,15 @@ material_schema = {
     'friendly_name': 'Tumour?',
     'field_name_regex': r'^(?:is[-_ ]+)?tumou?r\??$',
     'show_on_set_results': True
-    },
+  },
   'tissue_type': {
     'type': 'string',
     'show_on_form': True,
     'searchable': True,
-    'allowed': ['DNA', 'RNA', 'Blood', 'Saliva', 'Tissue', 'Cells', 'Cell Line', 'Lysed Cells'],
+    'allowed': [
+      'DNA', 'RNA', 'Blood', 'Saliva', 'Tissue', 'Cells',
+      'Cell Line', 'Lysed Cells', 'Library',
+    ],
     'required': True,
     'friendly_name': 'Tissue Type',
     'field_name_regex': '^tissue[-_ ]*type$',
